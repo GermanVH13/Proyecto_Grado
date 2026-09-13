@@ -6,7 +6,7 @@ import nmap
 
 def escanear_red(red_cidr):
     escaner = nmap.PortScanner()
-    escaner.scan(hosts=red_cidr, arguments="-sS -sV -O")
+    escaner.scan(hosts=red_cidr, arguments="-sS -sV -O -T4 --host-timeout 180s --max-retries 2")
     dispositivos = []
     for ip in escaner.all_hosts():
         host_info = escaner[ip]

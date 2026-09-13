@@ -1,0 +1,171 @@
+"""
+app.py — Punto de entrada de la aplicación Flask de Jagi-Sentinel.
+"""
+import os
+import threading
+from flask import Flask, render_template, request, redirect, url_for, jsonify
+from modules.models import db, Analisis, Dispositivo, Servicio, Vulnerabilidad
+from modules.network_manager import listar_interfaces_disponibles, obtener_info_red
+from modules.device_discovery import escanear_red
+from modules.normalizer import normalizar_a_cpe
+from modules.vulnerability_lookup import consultar_vulnerabilidades
+from modules.risk_engine import calcular_riesgo_servicio, calcular_riesgo_dispositivo
+
+app = Flask(__name__)
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{os.path.join(BASE_DIR, 'database', 'jagi-sentinel.db')}"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+db.init_app(app)
+
+with app.app_context():
+    db.create_all()
+
+# Diccionario en memoria para trackear el progreso de cada análisis en curso.
+# Clave: id del análisis. Valor: {"mensaje": str, "completado": bool, "error": str|None}
+ESTADOS = {}
+
+
+@app.route("/")
+def index():
+    interfaces = listar_interfaces_disponibles()
+    return render_template("index.html", interfaces=interfaces)
+
+
+def ejecutar_analisis_en_segundo_plano(app, analisis_id, interfaz):
+    """Corre el escaneo completo en un hilo aparte, actualizando ESTADOS."""
+    with app.app_context():
+        try:
+            ESTADOS[analisis_id] = {"mensaje": "Detectando información de red...", "completado": False, "error": None}
+            info_red = obtener_info_red(interfaz)
+
+            ESTADOS[analisis_id]["mensaje"] = f"Escaneando red {info_red['red_cidr']} con Nmap (puede tardar varios minutos)..."
+            dispositivos_nmap = escanear_red(info_red["red_cidr"])
+
+            analisis = Analisis.query.get(analisis_id)
+            analisis.red_cidr = info_red["red_cidr"]
+            db.session.commit()
+
+            riesgos_dispositivos = []
+            total = len(dispositivos_nmap)
+
+            for idx, d in enumerate(dispositivos_nmap, start=1):
+                ESTADOS[analisis_id]["mensaje"] = f"Procesando dispositivo {idx}/{total}: {d['ip']}..."
+
+                dispositivo = Dispositivo(
+                    analisis_id=analisis.id,
+                    ip=d["ip"],
+                    mac=d["mac"],
+                    fabricante=d.get("fabricante"),
+                    sistema_operativo=d.get("sistema_operativo"),
+                )
+                db.session.add(dispositivo)
+                db.session.commit()
+
+                servicios_evaluados = []
+
+                for s in d["servicios"]:
+                    ESTADOS[analisis_id]["mensaje"] = (
+                        f"Dispositivo {idx}/{total} ({d['ip']}): consultando NVD para puerto {s['puerto']}..."
+                    )
+                    cpe = normalizar_a_cpe(s.get("producto"), s.get("version"))
+                    vulnerabilidades = []
+                    if cpe:
+                        try:
+                            vulnerabilidades = consultar_vulnerabilidades(cpe)
+                        except RuntimeError:
+                            vulnerabilidades = []
+
+                    riesgo = calcular_riesgo_servicio(
+                        {"puerto": s["puerto"], "nombre_servicio": s.get("nombre_servicio")},
+                        vulnerabilidades,
+                    )
+
+                    servicio = Servicio(
+                        dispositivo_id=dispositivo.id,
+                        puerto=s["puerto"],
+                        protocolo=s.get("protocolo", "tcp"),
+                        nombre_servicio=s.get("nombre_servicio"),
+                        producto=s.get("producto"),
+                        version=s.get("version"),
+                        cpe=cpe,
+                        cvss_max=riesgo["cvss_max"],
+                        nivel_riesgo=riesgo["nivel_riesgo"],
+                    )
+                    db.session.add(servicio)
+                    db.session.commit()
+
+                    for v in vulnerabilidades[:10]:
+                        vuln = Vulnerabilidad(
+                            servicio_id=servicio.id,
+                            cve_id=v["cve_id"],
+                            cvss_score=v["cvss_score"],
+                            descripcion=v.get("descripcion", ""),
+                        )
+                        db.session.add(vuln)
+
+                    db.session.commit()
+                    servicios_evaluados.append(riesgo)
+
+                riesgo_dispositivo = calcular_riesgo_dispositivo(servicios_evaluados)
+                dispositivo.nivel_riesgo = riesgo_dispositivo
+                db.session.commit()
+                riesgos_dispositivos.append(riesgo_dispositivo)
+
+            riesgo_general = calcular_riesgo_dispositivo(
+                [{"nivel_riesgo": r} for r in riesgos_dispositivos]
+            )
+            analisis.riesgo_general = riesgo_general
+            db.session.commit()
+
+            ESTADOS[analisis_id] = {"mensaje": "Análisis completado.", "completado": True, "error": None}
+
+        except Exception as e:
+            ESTADOS[analisis_id] = {"mensaje": "Ocurrió un error durante el análisis.", "completado": True, "error": str(e)}
+
+
+@app.route("/analizar", methods=["POST"])
+def analizar():
+    interfaz = request.form["interfaz"]
+
+    analisis = Analisis(red_cidr="")
+    db.session.add(analisis)
+    db.session.commit()
+
+    ESTADOS[analisis.id] = {"mensaje": "Iniciando análisis...", "completado": False, "error": None}
+
+    hilo = threading.Thread(
+        target=ejecutar_analisis_en_segundo_plano,
+        args=(app, analisis.id, interfaz),
+        daemon=True,
+    )
+    hilo.start()
+
+    return redirect(url_for("analisis_progreso", analisis_id=analisis.id))
+
+
+@app.route("/analisis/<int:analisis_id>")
+def analisis_progreso(analisis_id):
+    return render_template("analysis.html", analisis_id=analisis_id)
+
+
+@app.route("/api/estado/<int:analisis_id>")
+def api_estado(analisis_id):
+    estado = ESTADOS.get(analisis_id, {"mensaje": "Desconocido", "completado": False, "error": None})
+    return jsonify(estado)
+
+
+@app.route("/dashboard/<int:analisis_id>")
+def dashboard(analisis_id):
+    analisis = Analisis.query.get_or_404(analisis_id)
+    return render_template("dashboard.html", analisis=analisis)
+
+
+@app.route("/historial")
+def historial():
+    analisis_lista = Analisis.query.order_by(Analisis.fecha.desc()).all()
+    return render_template("history.html", analisis_lista=analisis_lista)
+
+
+if __name__ == "__main__":
+    app.run(debug=True)

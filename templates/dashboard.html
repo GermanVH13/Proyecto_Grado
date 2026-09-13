@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard — Jagi-Sentinel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>🛡️ Resultado del análisis</h2>
+            <a href="/" class="btn btn-outline-secondary btn-sm">Nuevo análisis</a>
+        </div>
+
+        <div class="alert alert-{{ 'danger' if analisis.riesgo_general in ['Crítico','Alto'] else 'warning' if analisis.riesgo_general == 'Medio' else 'success' }}">
+            <strong>Red analizada:</strong> {{ analisis.red_cidr }} —
+            <strong>Riesgo general:</strong> {{ analisis.riesgo_general }} —
+            <strong>Dispositivos:</strong> {{ analisis.dispositivos|length }}
+        </div>
+
+        {% for d in analisis.dispositivos %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{ d.ip }} <small class="text-muted">{{ d.sistema_operativo or "SO desconocido" }}</small></h5>
+                <span class="badge bg-{{ 'danger' if d.nivel_riesgo in ['Crítico','Alto'] else 'warning' if d.nivel_riesgo == 'Medio' else 'success' }}">{{ d.nivel_riesgo }}</span>
+                <table class="table table-sm mt-3">
+                    <thead><tr><th>Puerto</th><th>Servicio</th><th>CVSS máx.</th><th>Riesgo</th></tr></thead>
+                    <tbody>
+                        {% for s in d.servicios %}
+                        <tr>
+                            <td>{{ s.puerto }}</td>
+                            <td>{{ s.nombre_servicio }}</td>
+                            <td>{{ s.cvss_max }}</td>
+                            <td>{{ s.nivel_riesgo }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
