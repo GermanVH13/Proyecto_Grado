@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Jagi-Sentinel{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <header class="header">
+        <a class="logo" href="{{ url_for('index') }}">JAGI-SENTINEL</a>
+        <span class="header-note">Proyecto de grado &mdash; USB Medellín</span>
+    </header>
+
+    {% block content %}{% endblock %}
+
+    <footer class="footer">
+        <span>JAGI-SENTINEL &copy; 2026</span>
+        <span>USO AUTORIZADO ÚNICAMENTE</span>
+    </footer>
+
+</body>
+</html>

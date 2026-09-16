@@ -1,53 +1,80 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Analizando... — Jagi-Sentinel</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
-    <div class="container py-5 text-center" style="max-width: 600px;">
-        <h2 class="mb-4">🛡️ Analizando tu red...</h2>
+{% extends "base.html" %}
+{% block title %}Analizando... — Jagi-Sentinel{% endblock %}
 
-        <div class="spinner-border text-primary mb-4" role="status" style="width: 3rem; height: 3rem;">
-            <span class="visually-hidden">Cargando...</span>
-        </div>
+{% block content %}
+<main class="screen screen-narrow">
+    <h1 class="scan-title">ANÁLISIS EN PROGRESO</h1>
+    <p class="scan-subtitle">Esto puede tardar varios minutos dependiendo de la cantidad de dispositivos en tu red.</p>
 
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <p id="mensaje-estado" class="mb-0 text-muted">Iniciando...</p>
-            </div>
-        </div>
-
-        <p class="text-muted small mt-4">Esto puede tardar varios minutos dependiendo de la cantidad de dispositivos en tu red.</p>
+    <div class="terminal">
+        <div class="terminal-header">JAGI-SENTINEL // SCAN LOG</div>
+        <pre class="scan-banner">{{ banner }}</pre>
+        <div id="log-lines"></div>
+        <div class="cursor-row" id="cursor-row"><span>&gt;</span><span class="cursor-blink"></span></div>
     </div>
 
-    <script>
-        const analisisId = {{ analisis_id }};
+    <div class="progress-row">
+        <span class="hint" id="hint-text">Analizando, por favor espera...</span>
+        <span class="elapsed" id="elapsed-time">00:00</span>
+    </div>
+</main>
 
-        async function consultarEstado() {
-            try {
-                const respuesta = await fetch(`/api/estado/${analisisId}`);
-                const datos = await respuesta.json();
+<script>
+    const analisisId = {{ analisis_id }};
+    const logContainer = document.getElementById("log-lines");
+    const cursorRow = document.getElementById("cursor-row");
+    const elapsedEl = document.getElementById("elapsed-time");
+    const hintEl = document.getElementById("hint-text");
 
-                document.getElementById("mensaje-estado").textContent = datos.mensaje;
+    let ultimoMensaje = null;
+    const inicio = Date.now();
 
-                if (datos.completado) {
-                    if (datos.error) {
-                        document.getElementById("mensaje-estado").textContent =
-                            "Error: " + datos.error;
-                    } else {
-                        window.location.href = `/dashboard/${analisisId}`;
-                    }
+    function formatearTranscurrido() {
+        const segundos = Math.floor((Date.now() - inicio) / 1000);
+        const m = String(Math.floor(segundos / 60)).padStart(2, "0");
+        const s = String(segundos % 60).padStart(2, "0");
+        return `${m}:${s}`;
+    }
+    setInterval(() => { elapsedEl.textContent = formatearTranscurrido(); }, 1000);
+
+    function agregarLinea(texto, esError) {
+        const row = document.createElement("div");
+        row.className = esError ? "log-line log-error" : "log-line";
+        row.innerHTML = `<span>&gt;</span><span></span>`;
+        row.querySelector("span:last-child").textContent = texto;
+        logContainer.appendChild(row);
+        cursorRow.scrollIntoView({ block: "nearest" });
+    }
+
+    async function consultarEstado() {
+        try {
+            const respuesta = await fetch(`/api/estado/${analisisId}`);
+            const datos = await respuesta.json();
+
+            if (datos.mensaje && datos.mensaje !== ultimoMensaje) {
+                agregarLinea(datos.mensaje, false);
+                ultimoMensaje = datos.mensaje;
+            }
+
+            if (datos.completado) {
+                if (datos.error) {
+                    agregarLinea(`Error: ${datos.error}`, true);
+                    hintEl.textContent = "El análisis se detuvo por un error.";
+                    cursorRow.classList.add("hidden");
                 } else {
-                    setTimeout(consultarEstado, 2000);
+                    hintEl.textContent = "Análisis completado. Redirigiendo...";
+                    setTimeout(() => {
+                        window.location.href = `/dashboard/${analisisId}`;
+                    }, 600);
                 }
-            } catch (e) {
+            } else {
                 setTimeout(consultarEstado, 2000);
             }
+        } catch (e) {
+            setTimeout(consultarEstado, 2000);
         }
+    }
 
-        consultarEstado();
-    </script>
-</body>
-</html>
+    consultarEstado();
+</script>
+{% endblock %}

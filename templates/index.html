@@ -1,37 +1,62 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Jagi-Sentinel</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
-    <div class="container py-5">
-        <div class="text-center mb-5">
-            <h1 class="fw-bold">🛡️ Jagi-Sentinel</h1>
-            <p class="text-muted">Análisis automatizado de seguridad en redes IoT</p>
-        </div>
+{% extends "base.html" %}
+{% block title %}Jagi-Sentinel{% endblock %}
 
-        <div class="card shadow-sm mx-auto" style="max-width: 500px;">
-            <div class="card-body p-4">
-                <h5 class="card-title mb-3">Iniciar nuevo análisis</h5>
-                <form action="/analizar" method="post">
-                    <div class="mb-3">
-                        <label for="interfaz" class="form-label">Interfaz de red</label>
-                        <select class="form-select" id="interfaz" name="interfaz" required>
-                            {% for iface in interfaces %}
-                                <option value="{{ iface }}">{{ iface }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Iniciar análisis</button>
-                </form>
+{% block content %}
+<main class="screen">
+
+    <div class="hero scanline-active">
+        <div class="hero-art">
+            <img src="{{ url_for('static', filename='img/ascii-art.png') }}"
+                 alt="Mascota de Jagi-Sentinel en ASCII art" class="ascii-img">
+        </div>
+        <div class="hero-copy">
+            <div class="eyebrow">// Sistema de Seguridad IoT</div>
+            <h1>Escáner Autónomo de
+Vulnerabilidades en Redes IoT</h1>
+            <p>Jagi-Sentinel detecta dispositivos activos en tu red local, identifica puertos expuestos, correlaciona vulnerabilidades conocidas (CVE) y genera informes de riesgo detallados — sin dependencias en la nube.</p>
+            <div class="hero-features">
+                <div>
+                    <div class="feature-title">Descubrimiento de red</div>
+                    <div class="feature-sub">Escaneo de hosts con Nmap</div>
+                </div>
+                <div>
+                    <div class="feature-title">Análisis de puertos</div>
+                    <div class="feature-sub">Servicios y versiones detectadas</div>
+                </div>
+                <div>
+                    <div class="feature-title">Base CVE / NVD</div>
+                    <div class="feature-sub">Consulta en tiempo real</div>
+                </div>
             </div>
         </div>
+    </div>
 
-        <div class="text-center mt-4">
-            <a href="/historial" class="text-decoration-none">Ver historial de análisis →</a>
+    <form class="action-card" action="{{ url_for('analizar') }}" method="post">
+        <div class="iface-field">
+            <label for="interfaz">Interfaz de Red</label>
+            <select id="interfaz" name="interfaz" required>
+                {% for iface in interfaces %}
+                <option value="{{ iface }}">{{ iface }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button class="btn-primary" type="submit">Iniciar Análisis de Seguridad</button>
+    </form>
+
+    <div class="system-info">
+        <div>
+            <div class="label">Motor</div>
+            <div class="value">Nmap + CVE / NVD</div>
+        </div>
+        <div>
+            <div class="label">Base de datos</div>
+            <div class="value">SQLite local</div>
+        </div>
+        <div>
+            <div class="label">Historial</div>
+            <div class="value"><a href="{{ url_for('historial') }}">Ver análisis anteriores &rarr;</a></div>
         </div>
     </div>
-</body>
-</html>
+
+</main>
+{% endblock %}

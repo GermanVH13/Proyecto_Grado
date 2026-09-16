@@ -1,44 +1,99 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Dashboard — Jagi-Sentinel</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
-    <div class="container py-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>🛡️ Resultado del análisis</h2>
-            <a href="/" class="btn btn-outline-secondary btn-sm">Nuevo análisis</a>
-        </div>
+{% extends "base.html" %}
+{% block title %}Dashboard — Jagi-Sentinel{% endblock %}
 
-        <div class="alert alert-{{ 'danger' if analisis.riesgo_general in ['Crítico','Alto'] else 'warning' if analisis.riesgo_general == 'Medio' else 'success' }}">
-            <strong>Red analizada:</strong> {{ analisis.red_cidr }} —
-            <strong>Riesgo general:</strong> {{ analisis.riesgo_general }} —
-            <strong>Dispositivos:</strong> {{ analisis.dispositivos|length }}
-        </div>
+{% block content %}
+<main class="screen">
 
+    <div class="results-title-row">
+        <div>
+            <div class="results-meta">{{ analisis.red_cidr or "Red desconocida" }} // {{ analisis.fecha.strftime("%d/%m/%Y %H:%M") }}</div>
+            <h1>RESULTADOS DEL ANÁLISIS</h1>
+        </div>
+        <div class="results-actions">
+            <a class="btn-secondary" href="{{ url_for('descargar_json', analisis_id=analisis.id) }}">Exportar JSON</a>
+            <a class="btn-primary" href="{{ url_for('descargar_pdf', analisis_id=analisis.id) }}">Generar Informe PDF</a>
+            <a class="btn-secondary" href="{{ url_for('index') }}">Nuevo Análisis</a>
+        </div>
+    </div>
+
+    <div class="summary-cards">
+        <div class="card">
+            <div class="label">Dispositivos</div>
+            <div class="value">{{ analisis.dispositivos|length }}</div>
+            <div class="sub">{{ analisis.red_cidr or "—" }}</div>
+        </div>
+        <div class="card">
+            <div class="label">Vulnerabilidades CVE</div>
+            <div class="value">{{ total_cve }}</div>
+            <div class="sub">NVD / NIST</div>
+        </div>
+        <div class="card">
+            <div class="label">Nivel de Riesgo General</div>
+            <div class="value" style="font-size: 1.9rem; letter-spacing: 0.05em;">{{ (analisis.riesgo_general or "Bajo")|upper }}</div>
+            <div class="sub">Motor de riesgo contextual</div>
+        </div>
+    </div>
+
+    <div class="risk-bar">
+        {% for nivel in ["Crítico", "Alto", "Medio", "Bajo"] %}
+        <div class="risk-item">
+            <div class="swatch" style="background:{{ {'Crítico':'#000000','Alto':'#1A1A1A','Medio':'#666666','Bajo':'#BBBBBB'}[nivel] }}"></div>
+            <span class="risk-label">{{ nivel|upper }}</span>
+            <span class="risk-count">{{ risk_counts.get(nivel, 0) }}</span>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if analisis.dispositivos %}
+    <div class="device-list">
         {% for d in analisis.dispositivos %}
-        <div class="card mb-3">
-            <div class="card-body">
-                <h5 class="card-title">{{ d.ip }} <small class="text-muted">{{ d.sistema_operativo or "SO desconocido" }}</small></h5>
-                <span class="badge bg-{{ 'danger' if d.nivel_riesgo in ['Crítico','Alto'] else 'warning' if d.nivel_riesgo == 'Medio' else 'success' }}">{{ d.nivel_riesgo }}</span>
-                <table class="table table-sm mt-3">
-                    <thead><tr><th>Puerto</th><th>Servicio</th><th>CVSS máx.</th><th>Riesgo</th></tr></thead>
+        <div class="device-block">
+            <div class="device-block-head">
+                <h3>{{ d.ip }}<span class="so">{{ d.sistema_operativo or "SO desconocido" }}</span></h3>
+                <span class="risk-tag {{ (d.nivel_riesgo or 'Bajo')|risk_slug }}">{{ (d.nivel_riesgo or "Bajo")|upper }}</span>
+            </div>
+            <div class="device-meta">MAC {{ d.mac or "desconocida" }}{% if d.fabricante %} &middot; {{ d.fabricante }}{% endif %}</div>
+
+            {% if d.servicios %}
+            <div class="device-table-wrap">
+                <table class="device-table compact">
+                    <thead>
+                        <tr>
+                            <th>Puerto</th>
+                            <th>Servicio</th>
+                            <th>Producto / Versión</th>
+                            <th>CVSS máx.</th>
+                            <th>CVEs</th>
+                            <th>Riesgo</th>
+                        </tr>
+                    </thead>
                     <tbody>
                         {% for s in d.servicios %}
                         <tr>
-                            <td>{{ s.puerto }}</td>
-                            <td>{{ s.nombre_servicio }}</td>
-                            <td>{{ s.cvss_max }}</td>
-                            <td>{{ s.nivel_riesgo }}</td>
+                            <td>{{ s.puerto }}/{{ s.protocolo }}</td>
+                            <td>{{ s.nombre_servicio or "—" }}</td>
+                            <td class="muted-cell">{{ s.producto or "—" }}{% if s.version %} {{ s.version }}{% endif %}</td>
+                            <td>{{ s.cvss_max or 0 }}</td>
+                            <td class="cve-cell">{{ s.vulnerabilidades|length if s.vulnerabilidades else "—" }}</td>
+                            <td><span class="risk-tag {{ (s.nivel_riesgo or 'Bajo')|risk_slug }}">{{ (s.nivel_riesgo or "Bajo")|upper }}</span></td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
+            {% else %}
+            <p class="empty-cell" style="font-family:'JetBrains Mono',monospace; font-size:0.75rem;">Sin puertos abiertos detectados.</p>
+            {% endif %}
         </div>
         {% endfor %}
     </div>
-</body>
-</html>
+    <div class="table-footer">
+        <span>{{ analisis.dispositivos|length }} dispositivos</span>
+        <span>ANÁLISIS COMPLETADO</span>
+    </div>
+    {% else %}
+    <div class="empty-state">No se encontraron dispositivos activos en esta red.</div>
+    {% endif %}
+
+</main>
+{% endblock %}

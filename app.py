@@ -3,18 +3,22 @@ app.py — Punto de entrada de la aplicación Flask de Jagi-Sentinel.
 """
 import os
 import threading
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, send_file
 from modules.models import db, Analisis, Dispositivo, Servicio, Vulnerabilidad
 from modules.network_manager import listar_interfaces_disponibles, obtener_info_red
 from modules.device_discovery import escanear_red
 from modules.normalizer import normalizar_a_cpe
 from modules.vulnerability_lookup import consultar_vulnerabilidades
 from modules.risk_engine import calcular_riesgo_servicio, calcular_riesgo_dispositivo
+from modules.report_generator import generar_reporte_pdf
+from banner import texto_banner_plano
 
 app = Flask(__name__)
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{os.path.join(BASE_DIR, 'database', 'jagi-sentinel.db')}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+REPORTS_DIR = os.path.join(BASE_DIR, "reports")
+os.makedirs(REPORTS_DIR, exist_ok=True)
 
 db.init_app(app)
 
@@ -24,6 +28,16 @@ with app.app_context():
 # Diccionario en memoria para trackear el progreso de cada análisis en curso.
 # Clave: id del análisis. Valor: {"mensaje": str, "completado": bool, "error": str|None}
 ESTADOS = {}
+
+
+def risk_slug(nivel):
+    """Convierte un nivel de riesgo en español ('Crítico', 'Alto'...) en la
+    clase CSS correspondiente (sin tildes) usada por los templates."""
+    mapa = {"crítico": "critico", "alto": "alto", "medio": "medio", "bajo": "bajo"}
+    return mapa.get((nivel or "bajo").strip().lower(), "bajo")
+
+
+app.jinja_env.filters["risk_slug"] = risk_slug
 
 
 @app.route("/")
@@ -146,7 +160,9 @@ def analizar():
 
 @app.route("/analisis/<int:analisis_id>")
 def analisis_progreso(analisis_id):
-    return render_template("analysis.html", analisis_id=analisis_id)
+    return render_template(
+        "analysis.html", analisis_id=analisis_id, banner=texto_banner_plano()
+    )
 
 
 @app.route("/api/estado/<int:analisis_id>")
@@ -158,7 +174,52 @@ def api_estado(analisis_id):
 @app.route("/dashboard/<int:analisis_id>")
 def dashboard(analisis_id):
     analisis = Analisis.query.get_or_404(analisis_id)
-    return render_template("dashboard.html", analisis=analisis)
+
+    total_cve = 0
+    risk_counts = {"Crítico": 0, "Alto": 0, "Medio": 0, "Bajo": 0}
+    for d in analisis.dispositivos:
+        risk_counts[d.nivel_riesgo or "Bajo"] = risk_counts.get(d.nivel_riesgo or "Bajo", 0) + 1
+        for s in d.servicios:
+            total_cve += len(s.vulnerabilidades)
+
+    return render_template(
+        "dashboard.html", analisis=analisis, total_cve=total_cve, risk_counts=risk_counts
+    )
+
+
+@app.route("/dashboard/<int:analisis_id>/pdf")
+def descargar_pdf(analisis_id):
+    analisis = Analisis.query.get_or_404(analisis_id)
+
+    dispositivos = []
+    for d in analisis.dispositivos:
+        dispositivos.append({
+            "ip": d.ip,
+            "sistema_operativo": d.sistema_operativo,
+            "nivel_riesgo": d.nivel_riesgo or "Bajo",
+            "servicios_evaluados": [
+                {
+                    "puerto": s.puerto,
+                    "nombre_servicio": s.nombre_servicio,
+                    "cvss_max": s.cvss_max,
+                    "nivel_riesgo": s.nivel_riesgo or "Bajo",
+                }
+                for s in d.servicios
+            ],
+        })
+
+    ruta_salida = os.path.join(REPORTS_DIR, f"informe_analisis_{analisis_id}.pdf")
+    generar_reporte_pdf(dispositivos, analisis.riesgo_general or "Bajo", ruta_salida)
+
+    return send_file(ruta_salida, as_attachment=True, download_name=f"informe_jagi_sentinel_{analisis_id}.pdf")
+
+
+@app.route("/dashboard/<int:analisis_id>/json")
+def descargar_json(analisis_id):
+    analisis = Analisis.query.get_or_404(analisis_id)
+    datos = analisis.to_dict()
+    datos["dispositivos"] = [d.to_dict() for d in analisis.dispositivos]
+    return jsonify(datos)
 
 
 @app.route("/historial")
