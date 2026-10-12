@@ -462,6 +462,20 @@ select:focus { outline: 2px solid var(--ink); outline-offset: 2px; }
 .device-table .muted-cell { color: var(--muted); }
 .empty-cell { color: var(--faint); }
 
+/* Estado de verificación NVD y lista de CVE por servicio */
+.device-table .estado-nvd { white-space: normal; min-width: 180px; }
+.device-table .estado-nvd.no-verificado { color: var(--muted); font-style: italic; }
+.device-table tr.cve-row td { padding: 0 14px 10px; white-space: normal; border-top: none; }
+.device-table tr.cve-row:hover { background: transparent; }
+.cve-detalle summary { cursor: pointer; color: var(--muted); font-size: 0.7rem; padding: 4px 0; }
+.cve-detalle[open] summary { color: var(--ink); }
+.cve-lista { list-style: none; margin: 6px 0 0; padding: 0; }
+.cve-lista li { display: grid; grid-template-columns: 150px 80px 1fr; gap: 12px; padding: 6px 0; border-top: 1px solid var(--hair); align-items: start; }
+.cve-lista .cve-id { color: var(--ink); font-weight: 700; }
+.cve-lista .cve-cvss { color: var(--muted); }
+.cve-lista .cve-desc { font-family: 'Inter', sans-serif; font-size: 0.78rem; line-height: 1.4; }
+@media (max-width: 700px) { .cve-lista li { grid-template-columns: 1fr; gap: 2px; } }
+
 .table-footer {
   border: 1px solid var(--ink);
   border-top: none;

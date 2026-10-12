@@ -79,6 +79,15 @@ class Servicio(db.Model):
         "Vulnerabilidad", backref="servicio", cascade="all, delete-orphan"
     )
 
+    @property
+    def estado_nvd_texto(self):
+        return etiqueta_estado_nvd(self.estado_nvd, self.total_cve or 0)
+
+    @property
+    def vulnerabilidades_ordenadas(self):
+        """CVE guardados, del más grave al menos grave (sin CVSS al final)."""
+        return sorted(self.vulnerabilidades, key=lambda v: v.cvss_score or 0, reverse=True)
+
     def to_dict(self):
         return {
             "id": self.id,
@@ -88,7 +97,7 @@ class Servicio(db.Model):
             "producto": self.producto,
             "version": self.version,
             "estado_nvd": self.estado_nvd,
-            "estado_nvd_texto": etiqueta_estado_nvd(self.estado_nvd, self.total_cve or 0),
+            "estado_nvd_texto": self.estado_nvd_texto,
             "total_cve": self.total_cve or 0,
             "cvss_max": self.cvss_max,
             "nivel_riesgo": self.nivel_riesgo,
