@@ -1,4 +1,3 @@
-cat > .gitignore <<'EOF'
 # Entornos virtuales de Python
 venv/
 .venv/
@@ -16,4 +15,3 @@ database/*.db
 
 # Logs de ejecución
 logs/
-
