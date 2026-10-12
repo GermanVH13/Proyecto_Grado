@@ -3,18 +3,21 @@ app.py — Punto de entrada de la aplicación Flask de Jagi-Sentinel.
 """
 import os
 import threading
+from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for, jsonify, send_file
 from modules.models import db, Analisis, Dispositivo, Servicio, Vulnerabilidad
 from modules.network_manager import listar_interfaces_disponibles, obtener_info_red
 from modules.device_discovery import escanear_red
 from modules.normalizer import normalizar_a_cpe
-from modules.vulnerability_lookup import consultar_vulnerabilidades
+from modules.vulnerability_lookup import consultar_vulnerabilidades, NVDError
+from modules.estados_nvd import determinar_estado
 from modules.risk_engine import calcular_riesgo_servicio, calcular_riesgo_dispositivo
 from modules.report_generator import generar_reporte_pdf
 from banner import texto_banner_plano
 
 app = Flask(__name__)
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+load_dotenv(os.path.join(BASE_DIR, ".env"))  # NVD_API_KEY, NVD_TIMEOUT, NVD_REINTENTOS
 app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{os.path.join(BASE_DIR, 'database', 'jagi-sentinel.db')}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 REPORTS_DIR = os.path.join(BASE_DIR, "reports")
@@ -84,11 +87,15 @@ def ejecutar_analisis_en_segundo_plano(app, analisis_id, interfaz):
                     )
                     cpe = normalizar_a_cpe(s.get("producto"), s.get("version"), s.get("cpes_nmap"))
                     vulnerabilidades = []
+                    consulta_fallida = False
                     if cpe:
                         try:
                             vulnerabilidades = consultar_vulnerabilidades(cpe)
-                        except RuntimeError:
-                            vulnerabilidades = []
+                        except NVDError:
+                            consulta_fallida = True
+                    estado_nvd = determinar_estado(
+                        cpe, s.get("version"), vulnerabilidades, consulta_fallida
+                    )
 
                     riesgo = calcular_riesgo_servicio(
                         {"puerto": s["puerto"], "nombre_servicio": s.get("nombre_servicio")},
@@ -103,13 +110,18 @@ def ejecutar_analisis_en_segundo_plano(app, analisis_id, interfaz):
                         producto=s.get("producto"),
                         version=s.get("version"),
                         cpe=cpe,
+                        estado_nvd=estado_nvd,
+                        total_cve=len(vulnerabilidades),
                         cvss_max=riesgo["cvss_max"],
                         nivel_riesgo=riesgo["nivel_riesgo"],
                     )
                     db.session.add(servicio)
                     db.session.commit()
 
-                    for v in vulnerabilidades[:10]:
+                    # Se guardan los 10 CVE más graves (el CVSS máximo ya usa la lista completa).
+                    mas_graves = sorted(vulnerabilidades,
+                                        key=lambda v: v["cvss_score"] or 0, reverse=True)
+                    for v in mas_graves[:10]:
                         vuln = Vulnerabilidad(
                             servicio_id=servicio.id,
                             cve_id=v["cve_id"],

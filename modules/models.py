@@ -5,6 +5,8 @@ Define las 4 tablas: Analisis, Dispositivo, Servicio, Vulnerabilidad.
 from datetime import datetime, timezone
 from flask_sqlalchemy import SQLAlchemy
 
+from modules.estados_nvd import etiqueta as etiqueta_estado_nvd
+
 db = SQLAlchemy()
 
 
@@ -68,6 +70,8 @@ class Servicio(db.Model):
     producto = db.Column(db.String(150))
     version = db.Column(db.String(50))
     cpe = db.Column(db.String(255))
+    estado_nvd = db.Column(db.String(30))   # ver modules/estados_nvd.py
+    total_cve = db.Column(db.Integer, default=0)  # CVE hallados (se guardan los 10 más graves)
     cvss_max = db.Column(db.Float, default=0)
     nivel_riesgo = db.Column(db.String(20))
 
@@ -83,6 +87,9 @@ class Servicio(db.Model):
             "nombre_servicio": self.nombre_servicio,
             "producto": self.producto,
             "version": self.version,
+            "estado_nvd": self.estado_nvd,
+            "estado_nvd_texto": etiqueta_estado_nvd(self.estado_nvd, self.total_cve or 0),
+            "total_cve": self.total_cve or 0,
             "cvss_max": self.cvss_max,
             "nivel_riesgo": self.nivel_riesgo,
             "vulnerabilidades": [v.to_dict() for v in self.vulnerabilidades],
