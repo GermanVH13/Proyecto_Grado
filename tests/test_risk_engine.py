@@ -64,3 +64,42 @@ def test_riesgo_dispositivo_toma_el_maximo():
     critico = {"nivel_riesgo": "Crítico"}
     medio = {"nivel_riesgo": "Medio"}
     assert calcular_riesgo_dispositivo([bajo, critico, medio]) == "Crítico"
+
+
+def test_cvss_alto_en_puerto_no_expuesto_es_alto():
+    """CVSS 7.0 sin puerto expuesto ni protocolo inseguro → Alto."""
+    resultado = calcular_riesgo_servicio(
+        {"puerto": 9999, "nombre_servicio": "otro"},
+        [{"cve_id": "CVE-X", "cvss_score": 7.0, "descripcion": ""}],
+    )
+    assert resultado["nivel_riesgo"] == "Alto"
+
+
+def test_cvss_critico_en_puerto_no_expuesto_es_critico():
+    resultado = calcular_riesgo_servicio(
+        {"puerto": 9999, "nombre_servicio": "otro"},
+        [{"cve_id": "CVE-X", "cvss_score": 9.1, "descripcion": ""}],
+    )
+    assert resultado["nivel_riesgo"] == "Crítico"
+
+
+def test_cvss_medio_en_puerto_expuesto_sube_a_alto():
+    """CVSS 6.5 + 1.0 por puerto expuesto = 7.5 → Alto."""
+    resultado = calcular_riesgo_servicio(
+        {"puerto": 22, "nombre_servicio": "ssh"},
+        [{"cve_id": "CVE-X", "cvss_score": 6.5, "descripcion": ""}],
+    )
+    assert resultado["nivel_riesgo"] == "Alto"
+
+
+def test_cve_sin_cvss_se_ignora_en_el_maximo():
+    resultado = calcular_riesgo_servicio(
+        {"puerto": 9999, "nombre_servicio": "otro"},
+        [{"cve_id": "CVE-X", "cvss_score": None, "descripcion": ""},
+         {"cve_id": "CVE-Y", "cvss_score": 5.0, "descripcion": ""}],
+    )
+    assert resultado["cvss_max"] == 5.0 and resultado["nivel_riesgo"] == "Medio"
+
+
+def test_riesgo_dispositivo_sin_servicios_es_bajo():
+    assert calcular_riesgo_dispositivo([]) == "Bajo"
