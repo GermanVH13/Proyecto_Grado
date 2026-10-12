@@ -1,0 +1,19 @@
+cat > .gitignore <<'EOF'
+# Entornos virtuales de Python
+venv/
+.venv/
+
+# Archivos generados por Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Variables de entorno y secretos (p. ej. API key de NVD)
+.env
+
+# Base de datos local (se crea sola al iniciar la app)
+database/*.db
+
+# Logs de ejecución
+logs/
+
