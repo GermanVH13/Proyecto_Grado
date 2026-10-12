@@ -18,9 +18,14 @@ from banner import texto_banner_plano
 app = Flask(__name__)
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(BASE_DIR, ".env"))  # NVD_API_KEY, NVD_TIMEOUT, NVD_REINTENTOS
-app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{os.path.join(BASE_DIR, 'database', 'jagi-sentinel.db')}"
+# JAGI_DATABASE_URI y JAGI_REPORTS_DIR son opcionales: los usan las pruebas automáticas
+# para no tocar la base de datos ni la carpeta reports/ reales.
+app.config["SQLALCHEMY_DATABASE_URI"] = (
+    os.environ.get("JAGI_DATABASE_URI")
+    or f"sqlite:///{os.path.join(BASE_DIR, 'database', 'jagi-sentinel.db')}"
+)
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-REPORTS_DIR = os.path.join(BASE_DIR, "reports")
+REPORTS_DIR = os.environ.get("JAGI_REPORTS_DIR") or os.path.join(BASE_DIR, "reports")
 os.makedirs(REPORTS_DIR, exist_ok=True)
 
 db.init_app(app)
