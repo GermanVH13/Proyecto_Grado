@@ -82,7 +82,7 @@ def ejecutar_analisis_en_segundo_plano(app, analisis_id, interfaz):
                     ESTADOS[analisis_id]["mensaje"] = (
                         f"Dispositivo {idx}/{total} ({d['ip']}): consultando NVD para puerto {s['puerto']}..."
                     )
-                    cpe = normalizar_a_cpe(s.get("producto"), s.get("version"))
+                    cpe = normalizar_a_cpe(s.get("producto"), s.get("version"), s.get("cpes_nmap"))
                     vulnerabilidades = []
                     if cpe:
                         try:
