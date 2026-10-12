@@ -25,7 +25,7 @@
         <div class="card">
             <div class="label">Vulnerabilidades CVE</div>
             <div class="value">{{ total_cve }}</div>
-            <div class="sub">NVD / NIST</div>
+            <div class="sub">NVD / NIST{% if no_verificados %} &middot; {{ no_verificados }} servicio{{ "s" if no_verificados != 1 }} sin verificar{% endif %}</div>
         </div>
         <div class="card">
             <div class="label">Nivel de Riesgo General</div>
@@ -63,7 +63,7 @@
                             <th>Servicio</th>
                             <th>Producto / Versión</th>
                             <th>CVSS máx.</th>
-                            <th>CVEs</th>
+                            <th>Estado NVD</th>
                             <th>Riesgo</th>
                         </tr>
                     </thead>
@@ -74,9 +74,27 @@
                             <td>{{ s.nombre_servicio or "—" }}</td>
                             <td class="muted-cell">{{ s.producto or "—" }}{% if s.version %} {{ s.version }}{% endif %}</td>
                             <td>{{ s.cvss_max or 0 }}</td>
-                            <td class="cve-cell">{{ s.vulnerabilidades|length if s.vulnerabilidades else "—" }}</td>
+                            <td class="estado-nvd{% if (s.estado_nvd or '').startswith('no_verificado') %} no-verificado{% endif %}">{{ s.estado_nvd_texto }}</td>
                             <td><span class="risk-tag {{ (s.nivel_riesgo or 'Bajo')|risk_slug }}">{{ (s.nivel_riesgo or "Bajo")|upper }}</span></td>
                         </tr>
+                        {% if s.vulnerabilidades %}
+                        <tr class="cve-row">
+                            <td colspan="6">
+                                <details class="cve-detalle">
+                                    <summary>Ver {{ s.vulnerabilidades|length }} CVE{% if (s.total_cve or 0) > s.vulnerabilidades|length %} (los más graves de {{ s.total_cve }}){% endif %}</summary>
+                                    <ul class="cve-lista">
+                                        {% for v in s.vulnerabilidades_ordenadas %}
+                                        <li>
+                                            <a class="cve-id" href="https://nvd.nist.gov/vuln/detail/{{ v.cve_id }}" target="_blank" rel="noopener noreferrer">{{ v.cve_id }}</a>
+                                            <span class="cve-cvss">CVSS {{ v.cvss_score if v.cvss_score is not none else "N/D" }}</span>
+                                            <span class="cve-desc">{{ v.descripcion or "Sin descripción." }}</span>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </details>
+                            </td>
+                        </tr>
+                        {% endif %}
                         {% endfor %}
                     </tbody>
                 </table>

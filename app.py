@@ -188,14 +188,18 @@ def dashboard(analisis_id):
     analisis = Analisis.query.get_or_404(analisis_id)
 
     total_cve = 0
+    no_verificados = 0
     risk_counts = {"Crítico": 0, "Alto": 0, "Medio": 0, "Bajo": 0}
     for d in analisis.dispositivos:
         risk_counts[d.nivel_riesgo or "Bajo"] = risk_counts.get(d.nivel_riesgo or "Bajo", 0) + 1
         for s in d.servicios:
-            total_cve += len(s.vulnerabilidades)
+            total_cve += s.total_cve or len(s.vulnerabilidades)
+            if (s.estado_nvd or "").startswith("no_verificado"):
+                no_verificados += 1
 
     return render_template(
-        "dashboard.html", analisis=analisis, total_cve=total_cve, risk_counts=risk_counts
+        "dashboard.html", analisis=analisis, total_cve=total_cve,
+        no_verificados=no_verificados, risk_counts=risk_counts
     )
 
 
@@ -215,6 +219,9 @@ def descargar_pdf(analisis_id):
                     "nombre_servicio": s.nombre_servicio,
                     "cvss_max": s.cvss_max,
                     "nivel_riesgo": s.nivel_riesgo or "Bajo",
+                    "estado_nvd_texto": s.estado_nvd_texto,
+                    "total_cve": s.total_cve or len(s.vulnerabilidades),
+                    "vulnerabilidades": [v.to_dict() for v in s.vulnerabilidades_ordenadas],
                 }
                 for s in d.servicios
             ],
