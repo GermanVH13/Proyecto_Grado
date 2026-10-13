@@ -82,3 +82,27 @@ def test_servicio_modelo_ordena_cve_de_mayor_a_menor():
         Vulnerabilidad(cve_id="A", cvss_score=9.8),
     ]
     assert [v.cve_id for v in s.vulnerabilidades_ordenadas] == ["A", "B", "C"]
+
+
+def test_html_muestra_credenciales_por_defecto():
+    s = {"puerto": 80, "nombre_servicio": "http", "cvss_max": 0, "nivel_riesgo": "Alto",
+         "estado_nvd_texto": "Sin CVE en NVD", "cred_defecto": True, "cred_detalle": "admin/admin"}
+    html = construir_html([dispositivo([s])], "Alto")
+    assert "Credenciales por defecto detectadas" in html
+    assert "admin/admin" in html
+
+
+def test_html_sin_credenciales_no_muestra_el_aviso():
+    s = {"puerto": 80, "nombre_servicio": "http", "cvss_max": 0, "nivel_riesgo": "Bajo",
+         "estado_nvd_texto": "Sin CVE en NVD", "cred_defecto": False}
+    html = construir_html([dispositivo([s])], "Bajo")
+    assert "Credenciales por defecto detectadas" not in html
+
+
+def test_html_incluye_referencias_del_cve():
+    s = {"puerto": 80, "nombre_servicio": "http", "cvss_max": 9.8, "nivel_riesgo": "Crítico",
+         "estado_nvd_texto": "1 CVE encontrados", "total_cve": 1,
+         "vulnerabilidades": [{"cve_id": "CVE-1", "cvss_score": 9.8, "descripcion": "d",
+                               "referencias": ["https://ref.test/aviso"]}]}
+    html = construir_html([dispositivo([s])], "Crítico")
+    assert "Referencias:" in html and "https://ref.test/aviso" in html

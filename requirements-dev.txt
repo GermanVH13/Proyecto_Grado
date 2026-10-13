@@ -1,0 +1,5 @@
+# Dependencias solo de desarrollo (no se instalan en producción).
+# Incluye las de la app y añade las herramientas de prueba.
+-r requirements.txt
+
+pytest==9.1.1

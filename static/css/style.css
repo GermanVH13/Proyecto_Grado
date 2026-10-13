@@ -553,3 +553,26 @@ select:focus { outline: 2px solid var(--ink); outline-offset: 2px; }
   .system-info > div { border-right: none; border-top: 1px solid var(--hair); padding: 12px 0 0; }
   .system-info > div:first-child { border-top: none; }
 }
+
+/* Aviso de credenciales por defecto (no es un CVE; se resalta aparte) */
+.device-table tr.cred-row td { padding: 6px 14px 10px; white-space: normal; border-top: none;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 700; color: var(--ink); }
+.device-table tr.cred-row:hover { background: transparent; }
+
+/* Referencias de cada CVE (enlaces del NVD) */
+.cve-lista .cve-refs { display: block; margin-top: 4px; font-size: 0.68rem; color: var(--muted); word-break: break-all; }
+.cve-lista .cve-refs a { color: var(--muted); text-decoration: underline; }
+
+/* Gráfico de barras de distribución de riesgo (propio, sin librerías externas) */
+.risk-chart { margin: 18px 0 24px; }
+.risk-chart-title { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--muted); margin-bottom: 10px; }
+.risk-chart-row { display: grid; grid-template-columns: 72px 1fr 28px; align-items: center; gap: 10px; margin: 6px 0; }
+.risk-chart-label { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--muted); }
+.risk-chart-track { background: var(--hair); height: 14px; overflow: hidden; }
+.risk-chart-fill { height: 100%; min-width: 2px; transition: width 0.4s ease; }
+.risk-chart-fill.critico { background: #000000; }
+.risk-chart-fill.alto { background: #3a3a3a; }
+.risk-chart-fill.medio { background: #7a7a7a; }
+.risk-chart-fill.bajo { background: #c2c2c2; }
+.risk-chart-count { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; text-align: right; color: var(--ink); }

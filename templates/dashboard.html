@@ -41,12 +41,17 @@
         </div>
     </div>
 
-    <div class="risk-bar">
+    <div class="risk-chart">
+        <div class="risk-chart-title">Distribución de dispositivos por nivel de riesgo</div>
+        {% set maximo = (risk_counts.values()|max) or 0 %}
         {% for nivel in ["Crítico", "Alto", "Medio", "Bajo"] %}
-        <div class="risk-item">
-            <div class="swatch" style="background:{{ {'Crítico':'#000000','Alto':'#1A1A1A','Medio':'#666666','Bajo':'#BBBBBB'}[nivel] }}"></div>
-            <span class="risk-label">{{ nivel|upper }}</span>
-            <span class="risk-count">{{ risk_counts.get(nivel, 0) }}</span>
+        {% set n = risk_counts.get(nivel, 0) %}
+        <div class="risk-chart-row">
+            <span class="risk-chart-label">{{ nivel|upper }}</span>
+            <div class="risk-chart-track">
+                <div class="risk-chart-fill {{ nivel|risk_slug }}" style="width: {{ ((n / maximo * 100) if maximo > 0 else 0)|round(1) }}%;"></div>
+            </div>
+            <span class="risk-chart-count">{{ n }}</span>
         </div>
         {% endfor %}
     </div>
@@ -84,6 +89,11 @@
                             <td class="estado-nvd{% if (s.estado_nvd or '').startswith('no_verificado') %} no-verificado{% endif %}">{{ s.estado_nvd_texto }}</td>
                             <td><span class="risk-tag {{ (s.nivel_riesgo or 'Bajo')|risk_slug }}">{{ (s.nivel_riesgo or "Bajo")|upper }}</span></td>
                         </tr>
+                        {% if s.cred_defecto %}
+                        <tr class="cred-row">
+                            <td colspan="6">&#9888; Credenciales por defecto detectadas{% if s.cred_detalle %} &mdash; <strong>{{ s.cred_detalle }}</strong>{% endif %}</td>
+                        </tr>
+                        {% endif %}
                         {% if s.vulnerabilidades %}
                         <tr class="cve-row">
                             <td colspan="6">
@@ -94,7 +104,7 @@
                                         <li>
                                             <a class="cve-id" href="https://nvd.nist.gov/vuln/detail/{{ v.cve_id }}" target="_blank" rel="noopener noreferrer">{{ v.cve_id }}</a>
                                             <span class="cve-cvss">CVSS {{ v.cvss_score if v.cvss_score is not none else "N/D" }}</span>
-                                            <span class="cve-desc">{{ v.descripcion or "Sin descripción." }}</span>
+                                            <span class="cve-desc">{{ v.descripcion or "Sin descripción." }}{% if v.referencias_lista %}<span class="cve-refs">Referencias: {% for u in v.referencias_lista %}<a href="{{ u }}" target="_blank" rel="noopener noreferrer">{{ u }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</span>{% endif %}</span>
                                         </li>
                                         {% endfor %}
                                     </ul>
