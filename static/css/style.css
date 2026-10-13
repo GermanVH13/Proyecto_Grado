@@ -402,6 +402,18 @@ select:focus { outline: 2px solid var(--ink); outline-offset: 2px; }
 .risk-tag.alto { border-color: var(--ink); }
 .risk-tag.medio { border-color: var(--muted); color: var(--muted); }
 .risk-tag.bajo { border-color: #BBBBBB; color: var(--faint); }
+.risk-tag.fallido { border-color: var(--danger); color: var(--danger); }
+
+.error-banner {
+  border: 1px solid var(--danger);
+  border-left: 6px solid var(--danger);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--danger);
+}
+.error-banner p { margin: 8px 0 0; color: var(--ink); line-height: 1.5; word-break: break-word; }
 
 /* Device list (dashboard) */
 .device-list { border: 1px solid var(--ink); border-bottom: none; }

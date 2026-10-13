@@ -17,6 +17,8 @@ class Analisis(db.Model):
     fecha = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     red_cidr = db.Column(db.String(50))
     riesgo_general = db.Column(db.String(20))  # Bajo / Medio / Alto / Crítico
+    estado = db.Column(db.String(20))          # en_curso / completado / fallido
+    error = db.Column(db.Text)                 # motivo, si el análisis falló
 
     dispositivos = db.relationship(
         "Dispositivo", backref="analisis", cascade="all, delete-orphan"
@@ -28,6 +30,8 @@ class Analisis(db.Model):
             "fecha": self.fecha.strftime("%d/%m/%Y %H:%M"),
             "red_cidr": self.red_cidr,
             "riesgo_general": self.riesgo_general,
+            "estado": self.estado,
+            "error": self.error,
             "total_dispositivos": len(self.dispositivos),
         }
 
