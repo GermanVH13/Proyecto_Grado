@@ -16,7 +16,7 @@ def clasificar_nivel(puntaje):
     return "Bajo"
 
 
-def calcular_riesgo_servicio(servicio, vulnerabilidades):
+def calcular_riesgo_servicio(servicio, vulnerabilidades, credenciales_por_defecto=False):
     scores = [v["cvss_score"] for v in vulnerabilidades if v["cvss_score"] is not None]
     cvss_max = max(scores, default=0)
     puntaje = cvss_max
@@ -28,9 +28,13 @@ def calcular_riesgo_servicio(servicio, vulnerabilidades):
         puntaje += 1.5
     if cvss_max == 0 and inseguro:
         puntaje = max(puntaje, 4.0)
+    # Credenciales de fábrica = acceso directo al dispositivo: riesgo Alto como mínimo.
+    if credenciales_por_defecto:
+        puntaje = max(puntaje, 7.0)
     return {
         "puerto": servicio.get("puerto"), "nombre_servicio": nombre,
         "cvss_max": cvss_max, "protocolo_inseguro": inseguro,
+        "credenciales_por_defecto": credenciales_por_defecto,
         "puntaje_contexto": round(puntaje, 1), "nivel_riesgo": clasificar_nivel(puntaje),
     }
 

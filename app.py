@@ -15,6 +15,7 @@ from modules.errores import mensaje_claro
 from modules.migracion import agregar_columnas_faltantes
 from modules.risk_engine import calcular_riesgo_servicio, calcular_riesgo_dispositivo
 from modules.report_generator import generar_reporte_pdf
+from modules.credenciales import verificar_credenciales_por_defecto
 from banner import texto_banner_plano
 
 app = Flask(__name__)
@@ -118,9 +119,14 @@ def ejecutar_analisis_en_segundo_plano(app, analisis_id, interfaz):
                         cpe, s.get("version"), vulnerabilidades, consulta_fallida
                     )
 
+                    cred = verificar_credenciales_por_defecto(
+                        d["ip"], s["puerto"], s.get("nombre_servicio")
+                    )
+
                     riesgo = calcular_riesgo_servicio(
                         {"puerto": s["puerto"], "nombre_servicio": s.get("nombre_servicio")},
                         vulnerabilidades,
+                        credenciales_por_defecto=cred["vulnerable"],
                     )
 
                     servicio = Servicio(
@@ -135,6 +141,8 @@ def ejecutar_analisis_en_segundo_plano(app, analisis_id, interfaz):
                         total_cve=len(vulnerabilidades),
                         cvss_max=riesgo["cvss_max"],
                         nivel_riesgo=riesgo["nivel_riesgo"],
+                        cred_defecto=cred["vulnerable"],
+                        cred_detalle=cred["credencial"],
                     )
                     db.session.add(servicio)
                     db.session.commit()

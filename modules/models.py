@@ -78,6 +78,8 @@ class Servicio(db.Model):
     total_cve = db.Column(db.Integer, default=0)  # CVE hallados (se guardan los 10 más graves)
     cvss_max = db.Column(db.Float, default=0)
     nivel_riesgo = db.Column(db.String(20))
+    cred_defecto = db.Column(db.Boolean, default=False)   # acepta credenciales de fábrica
+    cred_detalle = db.Column(db.String(100))              # pareja hallada, ej. "admin/admin"
 
     vulnerabilidades = db.relationship(
         "Vulnerabilidad", backref="servicio", cascade="all, delete-orphan"
@@ -103,6 +105,8 @@ class Servicio(db.Model):
             "estado_nvd": self.estado_nvd,
             "estado_nvd_texto": self.estado_nvd_texto,
             "total_cve": self.total_cve or 0,
+            "cred_defecto": bool(self.cred_defecto),
+            "cred_detalle": self.cred_detalle,
             "cvss_max": self.cvss_max,
             "nivel_riesgo": self.nivel_riesgo,
             "vulnerabilidades": [v.to_dict() for v in self.vulnerabilidades],
