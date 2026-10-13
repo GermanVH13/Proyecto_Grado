@@ -15,3 +15,7 @@ database/*.db
 
 # Logs de ejecución
 logs/
+
+# Informes PDF generados (pueden contener datos de la red analizada)
+reports/*.pdf
+!reports/informe_prueba.pdf
