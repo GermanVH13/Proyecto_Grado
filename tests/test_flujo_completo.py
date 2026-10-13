@@ -179,7 +179,7 @@ def test_el_error_sobrevive_a_un_reinicio_de_la_app(jagi, cliente):
 
 
 def test_fallo_a_mitad_del_analisis_se_registra_y_conserva_lo_ya_guardado(jagi):
-    def riesgo_roto(servicio, vulnerabilidades):
+    def riesgo_roto(servicio, vulnerabilidades, **kwargs):
         raise ValueError("fallo simulado")
     dispositivos = [host("192.168.1.9", [servicio(80, "http", "Apache httpd", "2.4.49")])]
     with jagi.app.app_context():

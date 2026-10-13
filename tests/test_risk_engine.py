@@ -103,3 +103,17 @@ def test_cve_sin_cvss_se_ignora_en_el_maximo():
 
 def test_riesgo_dispositivo_sin_servicios_es_bajo():
     assert calcular_riesgo_dispositivo([]) == "Bajo"
+
+
+def test_credenciales_por_defecto_sube_a_alto():
+    r = calcular_riesgo_servicio(
+        {"puerto": 80, "nombre_servicio": "http"}, [], credenciales_por_defecto=True
+    )
+    assert r["nivel_riesgo"] in ("Alto", "Crítico")
+    assert r["credenciales_por_defecto"] is True
+
+
+def test_sin_credenciales_por_defecto_no_cambia():
+    r = calcular_riesgo_servicio({"puerto": 9999, "nombre_servicio": "x"}, [])
+    assert r["nivel_riesgo"] == "Bajo"
+    assert r["credenciales_por_defecto"] is False
