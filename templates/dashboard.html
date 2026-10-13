@@ -11,10 +11,17 @@
         </div>
         <div class="results-actions">
             <a class="btn-secondary" href="{{ url_for('descargar_json', analisis_id=analisis.id) }}">Exportar JSON</a>
-            <a class="btn-primary" href="{{ url_for('descargar_pdf', analisis_id=analisis.id) }}">Generar Informe PDF</a>
+            {% if analisis.estado != 'fallido' %}<a class="btn-primary" href="{{ url_for('descargar_pdf', analisis_id=analisis.id) }}">Generar Informe PDF</a>{% endif %}
             <a class="btn-secondary" href="{{ url_for('index') }}">Nuevo Análisis</a>
         </div>
     </div>
+
+    {% if analisis.estado == 'fallido' %}
+    <div class="error-banner">
+        <strong>EL ANÁLISIS FALLÓ</strong>
+        <p>{{ analisis.error or "No se registró el motivo." }}</p>
+    </div>
+    {% endif %}
 
     <div class="summary-cards">
         <div class="card">
@@ -29,7 +36,7 @@
         </div>
         <div class="card">
             <div class="label">Nivel de Riesgo General</div>
-            <div class="value" style="font-size: 1.9rem; letter-spacing: 0.05em;">{{ (analisis.riesgo_general or "Bajo")|upper }}</div>
+            <div class="value" style="font-size: 1.9rem; letter-spacing: 0.05em;">{% if analisis.estado == 'fallido' %}—{% else %}{{ (analisis.riesgo_general or "Bajo")|upper }}{% endif %}</div>
             <div class="sub">Motor de riesgo contextual</div>
         </div>
     </div>
@@ -107,10 +114,10 @@
     </div>
     <div class="table-footer">
         <span>{{ analisis.dispositivos|length }} dispositivos</span>
-        <span>ANÁLISIS COMPLETADO</span>
+        <span>{% if analisis.estado == 'fallido' %}ANÁLISIS INCOMPLETO (RESULTADOS PARCIALES){% else %}ANÁLISIS COMPLETADO{% endif %}</span>
     </div>
     {% else %}
-    <div class="empty-state">No se encontraron dispositivos activos en esta red.</div>
+    <div class="empty-state">{% if analisis.estado == 'fallido' %}No hay resultados porque el análisis falló.{% else %}No se encontraron dispositivos activos en esta red.{% endif %}</div>
     {% endif %}
 
 </main>

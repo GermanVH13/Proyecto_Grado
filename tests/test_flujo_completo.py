@@ -139,3 +139,71 @@ def test_error_en_el_escaneo_queda_registrado(jagi):
     estado = jagi.ESTADOS[id_]
     assert estado["completado"] is True
     assert "nmap no instalado" in estado["error"]
+
+
+# ---------- Análisis fallidos: motivo claro, guardado y visible ----------
+import nmap
+from modules.models import Analisis as _Analisis
+
+
+def estado_guardado(jagi, id_):
+    with jagi.app.app_context():
+        a = db.session.get(_Analisis, id_)
+        return a.estado, a.error
+
+
+def test_analisis_exitoso_queda_marcado_como_completado(jagi):
+    id_, _ = ejecutar(jagi, [host("192.168.1.9", [servicio(80, "http", "Apache httpd", "2.4.49")])])
+    assert estado_guardado(jagi, id_) == ("completado", None)
+
+
+def test_fallo_de_nmap_se_guarda_con_mensaje_claro(jagi, cliente):
+    id_, _ = ejecutar(jagi, [], escaneo_falla=nmap.PortScannerError("nmap program was not found in path."))
+    estado, error = estado_guardado(jagi, id_)
+    assert estado == "fallido" and "Nmap no está instalado" in error
+    assert "Nmap no está instalado" in jagi.ESTADOS[id_]["error"]
+
+    html = cliente.get(f"/dashboard/{id_}").get_data(as_text=True)
+    assert "EL ANÁLISIS FALLÓ" in html and "Nmap no está instalado" in html
+    assert "No hay resultados porque el análisis falló." in html
+    assert "Generar Informe PDF" not in html
+    assert "FALLÓ" in cliente.get("/historial").get_data(as_text=True)
+    assert cliente.get(f"/dashboard/{id_}/pdf").status_code == 409
+
+
+def test_el_error_sobrevive_a_un_reinicio_de_la_app(jagi, cliente):
+    id_, _ = ejecutar(jagi, [], escaneo_falla=RuntimeError("No se encontró una ruta por defecto."))
+    jagi.ESTADOS.clear()          # como si la aplicación se hubiera reiniciado
+    datos = cliente.get(f"/api/estado/{id_}").get_json()
+    assert datos["completado"] is True and "No hay una conexión de red activa" in datos["error"]
+
+
+def test_fallo_a_mitad_del_analisis_se_registra_y_conserva_lo_ya_guardado(jagi):
+    def riesgo_roto(servicio, vulnerabilidades):
+        raise ValueError("fallo simulado")
+    dispositivos = [host("192.168.1.9", [servicio(80, "http", "Apache httpd", "2.4.49")])]
+    with jagi.app.app_context():
+        a = _Analisis(red_cidr="", estado="en_curso")
+        db.session.add(a)
+        db.session.commit()
+        id_ = a.id
+    with patch.object(jagi, "obtener_info_red", return_value=INFO_RED), \
+         patch.object(jagi, "escanear_red", return_value=dispositivos), \
+         patch.object(jagi, "consultar_vulnerabilidades", return_value=[]), \
+         patch.object(jagi, "calcular_riesgo_servicio", side_effect=riesgo_roto):
+        jagi.ejecutar_analisis_en_segundo_plano(jagi.app, id_, "wlp1s0")
+    estado, error = estado_guardado(jagi, id_)
+    assert estado == "fallido" and "ValueError: fallo simulado" in error
+    with jagi.app.app_context():
+        assert Dispositivo.query.filter_by(analisis_id=id_).count() == 1
+
+
+def test_analisis_en_curso_al_arrancar_se_marca_como_interrumpido(jagi):
+    with jagi.app.app_context():
+        a = _Analisis(red_cidr="", estado="en_curso")
+        db.session.add(a)
+        db.session.commit()
+        id_ = a.id
+        assert jagi.marcar_interrumpidos() == 1
+    estado, error = estado_guardado(jagi, id_)
+    assert estado == "fallido" and "se interrumpió" in error

@@ -32,7 +32,11 @@
                     <td>{{ a.fecha.strftime("%d/%m/%Y %H:%M") }}</td>
                     <td class="muted-cell">{{ a.red_cidr or "—" }}</td>
                     <td class="cve-cell">{{ a.dispositivos|length }}</td>
-                    <td><span class="risk-tag {{ (a.riesgo_general or 'Bajo')|risk_slug }}">{{ (a.riesgo_general or "Bajo")|upper }}</span></td>
+                    <td>
+                        {% if a.estado == 'fallido' %}<span class="risk-tag fallido" title="{{ a.error }}">FALLÓ</span>
+                        {% elif a.estado == 'en_curso' %}<span class="risk-tag medio">EN CURSO</span>
+                        {% else %}<span class="risk-tag {{ (a.riesgo_general or 'Bajo')|risk_slug }}">{{ (a.riesgo_general or "Bajo")|upper }}</span>{% endif %}
+                    </td>
                     <td><a class="btn-secondary" href="{{ url_for('dashboard', analisis_id=a.id) }}">Ver detalle</a></td>
                 </tr>
                 {% endfor %}

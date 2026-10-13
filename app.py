@@ -11,6 +11,8 @@ from modules.device_discovery import escanear_red
 from modules.normalizer import normalizar_a_cpe
 from modules.vulnerability_lookup import consultar_vulnerabilidades, NVDError
 from modules.estados_nvd import determinar_estado
+from modules.errores import mensaje_claro
+from modules.migracion import agregar_columnas_faltantes
 from modules.risk_engine import calcular_riesgo_servicio, calcular_riesgo_dispositivo
 from modules.report_generator import generar_reporte_pdf
 from banner import texto_banner_plano
@@ -30,8 +32,22 @@ os.makedirs(REPORTS_DIR, exist_ok=True)
 
 db.init_app(app)
 
+ERROR_INTERRUMPIDO = "El análisis se interrumpió porque la aplicación se cerró antes de terminar."
+
+def marcar_interrumpidos():
+    """Un análisis "en curso" al arrancar no puede seguir corriendo (su hilo murió con la app)."""
+    interrumpidos = Analisis.query.filter_by(estado="en_curso").all()
+    for analisis in interrumpidos:
+        analisis.estado = "fallido"
+        analisis.error = ERROR_INTERRUMPIDO
+    db.session.commit()
+    return len(interrumpidos)
+
+
 with app.app_context():
     db.create_all()
+    agregar_columnas_faltantes(db)
+    marcar_interrumpidos()
 
 # Diccionario en memoria para trackear el progreso de cada análisis en curso.
 # Clave: id del análisis. Valor: {"mensaje": str, "completado": bool, "error": str|None}
@@ -147,19 +163,30 @@ def ejecutar_analisis_en_segundo_plano(app, analisis_id, interfaz):
                 [{"nivel_riesgo": r} for r in riesgos_dispositivos]
             )
             analisis.riesgo_general = riesgo_general
+            analisis.estado = "completado"
             db.session.commit()
 
             ESTADOS[analisis_id] = {"mensaje": "Análisis completado.", "completado": True, "error": None}
 
         except Exception as e:
-            ESTADOS[analisis_id] = {"mensaje": "Ocurrió un error durante el análisis.", "completado": True, "error": str(e)}
+            db.session.rollback()
+            mensaje = mensaje_claro(e)
+            try:
+                fallido = db.session.get(Analisis, analisis_id)
+                if fallido is not None:
+                    fallido.estado = "fallido"
+                    fallido.error = mensaje
+                    db.session.commit()
+            except Exception:
+                db.session.rollback()
+            ESTADOS[analisis_id] = {"mensaje": "El análisis falló.", "completado": True, "error": mensaje}
 
 
 @app.route("/analizar", methods=["POST"])
 def analizar():
     interfaz = request.form["interfaz"]
 
-    analisis = Analisis(red_cidr="")
+    analisis = Analisis(red_cidr="", estado="en_curso")
     db.session.add(analisis)
     db.session.commit()
 
@@ -184,7 +211,16 @@ def analisis_progreso(analisis_id):
 
 @app.route("/api/estado/<int:analisis_id>")
 def api_estado(analisis_id):
-    estado = ESTADOS.get(analisis_id, {"mensaje": "Desconocido", "completado": False, "error": None})
+    estado = ESTADOS.get(analisis_id)
+    if estado is None:
+        # Sin registro en memoria (p. ej. la app se reinició): se consulta lo guardado.
+        analisis = db.session.get(Analisis, analisis_id)
+        if analisis is not None and analisis.estado == "fallido":
+            estado = {"mensaje": "El análisis falló.", "completado": True, "error": analisis.error}
+        elif analisis is not None and analisis.estado == "completado":
+            estado = {"mensaje": "Análisis completado.", "completado": True, "error": None}
+        else:
+            estado = {"mensaje": "Desconocido", "completado": False, "error": None}
     return jsonify(estado)
 
 
@@ -211,6 +247,8 @@ def dashboard(analisis_id):
 @app.route("/dashboard/<int:analisis_id>/pdf")
 def descargar_pdf(analisis_id):
     analisis = Analisis.query.get_or_404(analisis_id)
+    if analisis.estado == "fallido":
+        return "El análisis falló, por lo que no hay informe disponible.", 409
 
     dispositivos = []
     for d in analisis.dispositivos:
