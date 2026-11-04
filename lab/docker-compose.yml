@@ -1,0 +1,44 @@
+# Laboratorio virtualizado de Jagi-Sentinel (Fase III)
+# Red aislada 192.168.56.0/24 con tres dispositivos IoT simulados.
+# ADVERTENCIA: contiene servicios deliberadamente vulnerables.
+# Solo para uso en este equipo. NO agregar "ports:" a ningun servicio.
+
+name: jagi-lab
+
+networks:
+  jagi-lab:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: jagi-lab0   # nombre fijo de la interfaz
+    ipam:
+      config:
+        - subnet: 192.168.56.0/24
+          gateway: 192.168.56.1                    # el equipo de analisis
+
+services:
+  camara:               # Camara IP simulada: V-01 Telnet, V-02 admin/admin, V-04 HTTP
+    build: ./camara
+    container_name: lab-camara
+    hostname: camara-ip
+    networks:
+      jagi-lab:
+        ipv4_address: 192.168.56.10
+    restart: unless-stopped
+
+  impresora:            # Impresora simulada: V-03 Apache 2.4.49 (CVE-2021-41773)
+    image: httpd:2.4.49
+    container_name: lab-impresora
+    hostname: impresora
+    networks:
+      jagi-lab:
+        ipv4_address: 192.168.56.20
+    restart: unless-stopped
+
+  nas:                  # Sensor/NAS simulado: V-05 FTP innecesario
+    build: ./nas
+    container_name: lab-nas
+    hostname: sensor-nas
+    networks:
+      jagi-lab:
+        ipv4_address: 192.168.56.30
+    restart: unless-stopped

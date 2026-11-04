@@ -94,3 +94,27 @@ def test_analizar_crea_el_analisis_y_lanza_el_hilo(jagi, cliente):
     Hilo.return_value.start.assert_called_once()
     with jagi.app.app_context():
         assert Analisis.query.count() == 1
+
+
+def test_dashboard_muestra_credenciales_por_defecto(jagi, cliente):
+    with jagi.app.app_context():
+        a = Analisis(red_cidr="192.168.56.0/24", riesgo_general="Alto")
+        db.session.add(a); db.session.commit()
+        d = Dispositivo(analisis_id=a.id, ip="192.168.56.10", mac="02:42", nivel_riesgo="Alto")
+        db.session.add(d); db.session.commit()
+        s_ = Servicio(dispositivo_id=d.id, puerto=80, nombre_servicio="http",
+                      estado_nvd="sin_cve", total_cve=0, cvss_max=0, nivel_riesgo="Alto",
+                      cred_defecto=True, cred_detalle="admin/admin")
+        db.session.add(s_); db.session.commit()
+        id_ = a.id
+    html = cliente.get(f"/dashboard/{id_}").get_data(as_text=True)
+    assert "Credenciales por defecto detectadas" in html
+    assert "admin/admin" in html
+
+
+def test_dashboard_incluye_grafico_de_riesgo(jagi, cliente):
+    id_ = sembrar_analisis(jagi)
+    html = cliente.get(f"/dashboard/{id_}").get_data(as_text=True)
+    assert "risk-chart" in html
+    assert "Distribución de dispositivos por nivel de riesgo" in html
+    assert 'risk-chart-fill critico" style="width: 100.0%' in html

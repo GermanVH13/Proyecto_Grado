@@ -121,6 +121,11 @@ class Vulnerabilidad(db.Model):
     cve_id = db.Column(db.String(30), nullable=False)
     cvss_score = db.Column(db.Float)
     descripcion = db.Column(db.Text)
+    referencias = db.Column(db.Text)   # URLs de NVD, una por línea
+
+    @property
+    def referencias_lista(self):
+        return [u for u in (self.referencias or "").splitlines() if u.strip()]
 
     def to_dict(self):
         return {
@@ -128,4 +133,5 @@ class Vulnerabilidad(db.Model):
             "cve_id": self.cve_id,
             "cvss_score": self.cvss_score,
             "descripcion": self.descripcion,
+            "referencias": self.referencias_lista,
         }

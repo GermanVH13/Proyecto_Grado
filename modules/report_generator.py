@@ -31,6 +31,9 @@ PLANTILLA_HTML = """
     .cve-id {{ font-weight: bold; white-space: nowrap; }}
     .cves td:nth-child(2) {{ white-space: nowrap; }}
     .nota {{ color: #666; font-size: 0.8em; margin: 2px 0 0 18px; }}
+    .cred td {{ color: #c62828; font-weight: bold; font-size: 0.85em; }}
+    .refs {{ color: #555; font-size: 0.78em; margin-top: 3px; word-break: break-all; }}
+    .refs a {{ color: #1565c0; }}
 </style>
 </head>
 <body>
@@ -59,11 +62,18 @@ BLOQUE_DISPOSITIVO = """
 
 def _bloque_cve(vulnerabilidades, total_cve):
     """Lista de CVE de un servicio (ID, CVSS y descripción completa)."""
+    def _celda_desc(v):
+        desc = escape(v.get("descripcion") or "Sin descripción.")
+        refs = v.get("referencias") or []
+        if refs:
+            enlaces = ", ".join(f'<a href="{escape(u)}">{escape(u)}</a>' for u in refs)
+            desc += f'<div class="refs">Referencias: {enlaces}</div>'
+        return desc
     filas = "".join(
         '<tr><td class="cve-id">{id}</td><td>CVSS {cvss}</td><td>{desc}</td></tr>'.format(
             id=escape(str(v.get("cve_id", ""))),
             cvss=escape(str(v["cvss_score"])) if v.get("cvss_score") is not None else "N/D",
-            desc=escape(v.get("descripcion") or "Sin descripción."),
+            desc=_celda_desc(v),
         )
         for v in vulnerabilidades
     )
@@ -83,6 +93,10 @@ def _fila_servicio(s):
         f'<td>{escape(str(s.get("cvss_max", 0)))}</td>'
         f'<td>{escape(str(s.get("nivel_riesgo", "")))}</td></tr>'
     )
+    if s.get("cred_defecto"):
+        detalle = s.get("cred_detalle")
+        extra = " &mdash; " + escape(str(detalle)) if detalle else ""
+        fila += f'<tr class="cred"><td colspan="5">Credenciales por defecto detectadas{extra}</td></tr>'
     if s.get("vulnerabilidades"):
         fila += _bloque_cve(s["vulnerabilidades"], s.get("total_cve", 0))
     return fila

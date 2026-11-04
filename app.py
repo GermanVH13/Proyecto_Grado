@@ -156,6 +156,7 @@ def ejecutar_analisis_en_segundo_plano(app, analisis_id, interfaz):
                             cve_id=v["cve_id"],
                             cvss_score=v["cvss_score"],
                             descripcion=v.get("descripcion", ""),
+                            referencias="\n".join(v.get("referencias", [])),
                         )
                         db.session.add(vuln)
 
@@ -270,6 +271,8 @@ def descargar_pdf(analisis_id):
                     "nombre_servicio": s.nombre_servicio,
                     "cvss_max": s.cvss_max,
                     "nivel_riesgo": s.nivel_riesgo or "Bajo",
+                    "cred_defecto": s.cred_defecto,
+                    "cred_detalle": s.cred_detalle,
                     "estado_nvd_texto": s.estado_nvd_texto,
                     "total_cve": s.total_cve or len(s.vulnerabilidades),
                     "vulnerabilidades": [v.to_dict() for v in s.vulnerabilidades_ordenadas],
@@ -299,4 +302,9 @@ def historial():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # El modo debug queda DESACTIVADO por defecto: el depurador de Werkzeug permite
+    # ejecutar código Python desde el navegador y, como la app corre con sudo (Nmap lo
+    # exige), eso equivaldría a dar acceso root al equipo. Para desarrollo se activa con
+    # la variable de entorno FLASK_DEBUG=1.
+    modo_debug = os.environ.get("FLASK_DEBUG", "0") == "1"
+    app.run(host="127.0.0.1", debug=modo_debug)
