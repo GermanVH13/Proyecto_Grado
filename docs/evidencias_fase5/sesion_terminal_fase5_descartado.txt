@@ -1,0 +1,132 @@
+Script iniciado en 2026-11-08 15:17:02-05:00 [TERM="xterm-256color" TTY="/dev/pts/1" COLUMNS="80" LINES="24"]
+]666;vte.shell.postexec=0\]7;file://ROOT/home/german/Proyecto_Grado\]0;german@ROOT:~/Proyecto_Grado\]666;vte.shell.precmd!\[?2004h]0;german@ROOT: ~/Proyecto_Grado[01;32mgerman@ROOT[00m:[01;34m~/Proyecto_Grado[00m$ [K]0;german@ROOT: ~/Proyecto_Grado[01;32mgerman@ROOT[00m:[01;34m~/Proyecto_Grado[00m$ sudo venv/bin/python3 app.py
+[?2004l]133;C\]666;vte.shell.preexec!\[sudo: authenticate] Contraseña: ******      
+ * Serving Flask app 'app'
+ * Debug mode: off
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+[33mPress CTRL+C to quit[0m
+127.0.0.1 - - [08/Nov/2026 15:23:31] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:23:31] "GET /static/css/style.css HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:23:31] "GET /static/img/ascii-art.png HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:23:32] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+127.0.0.1 - - [08/Nov/2026 15:23:56] "[32mPOST /analizar HTTP/1.1[0m" 302 -
+127.0.0.1 - - [08/Nov/2026 15:23:56] "GET /analisis/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:23:56] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [08/Nov/2026 15:23:56] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:23:58] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:00] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:02] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:04] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:06] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:08] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:10] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:12] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:14] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:16] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:18] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:21] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:23] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:25] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:27] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:29] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:31] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:33] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:35] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:37] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:39] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:41] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:43] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:45] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:47] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:49] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:51] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:53] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:55] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:57] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:24:59] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:01] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:03] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:05] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:07] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:09] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:11] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:13] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:15] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:17] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:19] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:21] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:23] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:25] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:27] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:29] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:31] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:33] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:35] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:37] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:39] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:41] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:43] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:45] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:47] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:49] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:51] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:53] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:55] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:57] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:25:59] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:26:01] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:26:03] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:26:05] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:26:07] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:26:09] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:26:11] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:26:13] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:26:15] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:26:18] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:26:20] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:26:22] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:26:24] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:26:26] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:26:28] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:26:30] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:26:32] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:26:34] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:26:36] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:26:38] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:26:40] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:26:42] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:26:44] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:26:46] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:26:48] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:26:50] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:26:52] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:26:54] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:26:56] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:26:58] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:27:00] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:27:02] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:27:04] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:27:06] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:27:08] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:27:10] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:27:12] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:27:14] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:27:16] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:27:18] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:27:20] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:27:22] "GET /api/estado/1 HTTP/1.1" 200 -
+/home/german/Proyecto_Grado/app.py:84: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  analisis = Analisis.query.get(analisis_id)
+127.0.0.1 - - [08/Nov/2026 15:27:24] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:27:25] "GET /dashboard/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:27:25] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [08/Nov/2026 15:28:31] "GET /analisis/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:28:31] "GET /static/css/style.css HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:28:32] "GET /api/estado/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:28:33] "GET /dashboard/1 HTTP/1.1" 200 -
+127.0.0.1 - - [08/Nov/2026 15:28:33] "GET /static/css/style.css HTTP/1.1" 200 -
+^C]666;vte.shell.postexec=0\]7;file://ROOT/home/german/Proyecto_Grado\]0;german@ROOT:~/Proyecto_Grado\]666;vte.shell.precmd!\[?2004h]0;german@ROOT: ~/Proyecto_Grado[01;32mgerman@ROOT[00m:[01;34m~/Proyecto_Grado[00m$ exit
+[?2004l]133;C\]666;vte.shell.preexec!\exit
+
+Script terminado en 2026-11-08 15:32:58-05:00 [CÓDIGO_SALIDA_ORDEN="0"]
