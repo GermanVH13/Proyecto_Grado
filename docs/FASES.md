@@ -10,14 +10,14 @@ está cada fase y por qué se hicieron las cosas de una manera y no de otra.
 
 ## Resumen del estado por fase
 
-| Fase | Descripción | Estado | Fechas (cronograma reprogramado) |
+| Fase | Descripción | Estado | Fechas reales |
 |---|---|---|---|
 | I | Análisis y diseño | Completada | Agosto |
-| II | Desarrollo e integración (MVP) | Completada | hasta el 18 de octubre |
-| III | Preparación del laboratorio | Completada | 19-25 de octubre |
-| IV | Proceso manual (línea base) | Pendiente | 26-29 de octubre |
-| V | Proceso automatizado (con la app) | Pendiente | 30 de octubre - 1 de noviembre |
-| VI | Análisis comparativo y documentación | Pendiente | 2-20 de noviembre |
+| II | Desarrollo e integración (MVP) | Completada | Agosto - 12 de octubre |
+| III | Preparación del laboratorio | Completada | 15 de octubre |
+| IV | Proceso manual (línea base) | Completada | 8 de noviembre |
+| V | Proceso automatizado (con la app) | Completada | 8 de noviembre |
+| VI | Análisis comparativo y documentación | En curso | 8 - 20 de noviembre |
 
 ---
 
@@ -115,6 +115,8 @@ está cada fase y por qué se hicieron las cosas de una manera y no de otra.
 - El equipo de análisis actúa como gateway de la red del laboratorio (no hay router físico).
 - Apache 2.4.49 como versión vulnerable: CVE documentado, CVSS alto e imagen oficial.
 - Las credenciales por defecto se mantienen (V-02) y ya están cubiertas por el código.
+- Los archivos del laboratorio se subieron al repositorio en la carpeta lab/ (commit 84c67a4)
+  para que cualquier integrante pueda replicarlo.
 
 ### Resultado de la verificación (15 de octubre de 2026)
 
@@ -134,28 +136,98 @@ conteo de dispositivos IoT. Evidencia en docs/evidencias_fase3/.
 
 ## Fase IV — Proceso manual
 
-**Estado:** Pendiente · **Documento:** Sección 9.6 (Fase IV).
+**Estado:** Completada (8 de noviembre de 2026) · **Documento:** Sección 9.6 (Fase IV) y Resultados.
 
-Auditoría manual del laboratorio (Nmap + consultas manuales a NVD) para obtener la línea
-base, registrando tiempo, herramientas, comandos, intervenciones y detecciones.
+### Qué se hizo
+- Auditoría manual del laboratorio por Jhoan Vélez, de 14:51 a 15:19 (28 minutos), sin
+  Jagi-Sentinel:
+  - Descubrimiento de equipos con nmap -sn y escaneo de servicios con nmap -sS -sV -O.
+  - Tabla manual de servicios y versiones.
+  - Búsqueda en la web de NVD por palabra clave (Apache httpd 2.4.49 y vsftpd 3.0.5).
+  - Prueba de credenciales de fábrica con curl (admin/admin funcionó en .10:80).
+  - Revisión extra del acceso anónimo al FTP (curl ftp://192.168.56.30/).
+  - Priorización manual e informe en texto plano.
+- Métricas: 4 herramientas (Nmap, curl, navegador, editor), 7 comandos, 6 consultas a NVD,
+  5 cambios de ventana (reconstruido, mínimo). Detección: 5 de 5 (100%).
+- Evidencias en docs/evidencias_fase4/: sesión de terminal, salida de Nmap e informe manual.
+
+### Decisiones tomadas
+- **Grabar la terminal con script:** sirve de evidencia y permite contar los comandos sin error.
+- **La preparación (pruebas y laboratorio) no se cronometra:** el tiempo va del primer
+  comando de la auditoría hasta guardar el informe.
+- **Para los CVE se toma la nota de NIST: NVD** (no la de CISA-ADP); para los CVE que NVD aún
+  no analiza ("Awaiting Enrichment") se usa la nota del CNA, marcada como provisional.
+- **La auditoría se hizo con apoyo de un asistente** para el procedimiento y la interpretación.
+  Se declara en el informe y en el documento como amenaza a la validez: favorece al proceso
+  manual, por lo que la ventaja de Jagi-Sentinel es una estimación conservadora.
+- **Cambios de ventana reconstruidos:** no se contaron durante la ejecución; se reporta un
+  mínimo reconstruido. Los clics no se registraron y no se comparan.
 
 ---
 
 ## Fase V — Proceso automatizado
 
-**Estado:** Pendiente · **Documento:** Sección 9.6 (Fase V).
+**Estado:** Completada (8 de noviembre de 2026) · **Documento:** Sección 9.6 (Fase V) y Resultados.
 
-Misma auditoría con Jagi-Sentinel, registrando las mismas métricas. La ejecuta un integrante
-distinto que no conozca la lista de vulnerabilidades (para reducir el sesgo de aprendizaje).
+### Qué se hizo
+- Germán Valencia ejecutó Jagi-Sentinel en su propio equipo (Intel Core i5-7200U, 14 GiB,
+  Ubuntu 26.04.1, wifi), siguiendo la guía Guia_Fase_V_Jagi-Sentinel.pdf, sobre el mismo
+  laboratorio y el mismo commit (84c67a4), de 15:45 a 15:50 (5 min 27,5 s).
+- Métricas: 1 herramienta (Jagi-Sentinel), 1 comando, 0 consultas a NVD, 1 cambio de ventana,
+  16 clics. Detección: 5 de 5 (100%).
+- Evidencias en docs/evidencias_fase5/: 11 capturas, informe PDF, sesión de terminal y el
+  registro de ejecución (Anexos 1 y 2).
+
+### Decisiones tomadas
+- **Ejecución en un equipo distinto:** el compañero estaba en otro lugar. El laboratorio es
+  idéntico (mismo docker-compose.yml); se registraron los datos del equipo y se declara como
+  amenaza a la validez del tiempo.
+- **La guía no revela las vulnerabilidades:** el ejecutor levantó el laboratorio sin abrir lab/
+  (su README trae la lista completa).
+- **Primer intento descartado:** el equipo se quedó sin batería. Se repitió desde el inicio con
+  cronómetro nuevo y se conservó la grabación (sesion_terminal_fase5_descartado.txt).
+- **Se cuenta 1 comando** (el que inicia la app); el documento decía "ninguno" y se corrigió.
 
 ---
 
 ## Fase VI — Análisis y documentación
 
-**Estado:** Pendiente · **Documento:** Sección 9.7 y Plan de análisis.
+**Estado:** En curso · **Documento:** Resultados, Conclusiones, Anexo E.
 
-Comparación descriptiva (tiempo, complejidad, detección), gráficos, interpretación, informe
-final y defensa.
+### Qué se hizo
+- Calificación de la detección con el criterio del Anexo F: 5 de 5 en ambas modalidades.
+  Diferencia de 0 puntos porcentuales: cumple el criterio de aceptación (margen de 5).
+- Comparación consolidada:
+
+| Indicador | Manual | Jagi-Sentinel | Reducción |
+|---|---|---|---|
+| Tiempo | 28 min | 5,46 min | 80,5% |
+| Herramientas | 4 | 1 | 75% |
+| Comandos | 7 | 1 | 85,7% |
+| Consultas a NVD | 6 | 0 | 100% |
+| Cambios de ventana | 5 (mínimo) | 1 | 80% |
+| Detección | 100% | 100% | 0 puntos |
+
+- Tres gráficos de barras (tiempo, complejidad y detección).
+- Documento de grado actualizado (proyecto_grado_v3.tex): secciones nuevas de Resultados y
+  Conclusiones, Resumen y Summary con resultados, cronograma con fechas reales, Anexo E
+  diligenciado y correcciones pendientes (1 comando en la Fase V, 128 pruebas).
+
+### Hallazgos para la discusión
+- **Apache 2.4.49:** la búsqueda manual por palabra clave halló 2 CVE; Jagi-Sentinel, 100 (la
+  consulta por CPE encuentra los CVE de rangos de versiones). Valor del normalizador CPE.
+- **vsftpd 3.0.5:** la búsqueda manual halló 2 CVE recientes ("Awaiting Enrichment"); la app no,
+  porque aún no tienen CPE en NVD. Limitación real del enfoque automatizado.
+- **FTP anónimo:** lo detectó el proceso manual; la app no lo revisa (trabajo futuro).
+
+### Decisiones tomadas
+- **Herramientas: no se cuenta la terminal** en ninguna fase (es el medio, no la herramienta);
+  en la Fase V el navegador cuenta como parte de Jagi-Sentinel.
+- **Las amenazas a la validez se declaran todas** (asistencia en la Fase IV, equipos distintos,
+  conteo reconstruido, intento descartado): ninguna invalida la conclusión.
+
+### Pendiente
+- Bitácora de la sesión, pull request de la rama a main y preparación de la sustentación.
 
 ---
 
@@ -172,7 +244,10 @@ final y defensa.
 | Tipo de dispositivo a futuro | Implementarlo ahora | MAC genérica en Docker: no es fiable |
 | Laboratorio virtualizado | Dispositivos físicos | Replicable e idéntico en cada ejecución |
 | Debug desactivado por defecto | Dejar debug activo | Seguridad: evita ejecución de código con sudo |
+| Tiempo sin la preparación | Incluir instalación y laboratorio | Medir solo la auditoría, igual en ambas fases |
+| No contar la terminal | Contarla como herramienta | Es el medio; regla igual en ambas fases |
+| Declarar la asistencia en la Fase IV | Omitirla | Honestidad; además favorece al proceso manual |
 
 ---
 
-*Última actualización: 15 de octubre de 2026 — Fase II cerrada, Fase III en curso.*
+*Última actualización: 8 de noviembre de 2026 — Fases IV y V completadas, Fase VI en curso.*
