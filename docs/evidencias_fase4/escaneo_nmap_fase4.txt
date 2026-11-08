@@ -1,0 +1,158 @@
+# Nmap 7.94SVN scan initiated Sun Nov  8 14:52:40 2026 as: nmap -sS -sV -O -oN docs/evidencias_fase4/escaneo_nmap_fase4.txt 192.168.56.0/24
+Nmap scan report for 192.168.56.10
+Host is up (0.000064s latency).
+Not shown: 998 closed tcp ports (reset)
+PORT   STATE SERVICE VERSION
+23/tcp open  telnet  BusyBox telnetd
+80/tcp open  http
+1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
+SF-Port80-TCP:V=7.94SVN%I=7%D=11/8%Time=6AF0D310%P=x86_64-pc-linux-gnu%r(G
+SF:etRequest,10C,"HTTP/1\.1\x20401\x20Unauthorized\r\nDate:\x20Sun,\x2008\
+SF:x20Nov\x202026\x2019:52:48\x20GMT\r\nConnection:\x20close\r\nContent-ty
+SF:pe:\x20text/html\r\nWWW-Authenticate:\x20Basic\x20realm=\"Web\x20Server
+SF:\x20Authentication\"\r\n\r\n<HTML><HEAD><TITLE>401\x20Unauthorized</TIT
+SF:LE></HEAD>\n<BODY><H1>401\x20Unauthorized</H1>\n\n</BODY></HTML>\n")%r(
+SF:HTTPOptions,10C,"HTTP/1\.1\x20401\x20Unauthorized\r\nDate:\x20Sun,\x200
+SF:8\x20Nov\x202026\x2019:52:48\x20GMT\r\nConnection:\x20close\r\nContent-
+SF:type:\x20text/html\r\nWWW-Authenticate:\x20Basic\x20realm=\"Web\x20Serv
+SF:er\x20Authentication\"\r\n\r\n<HTML><HEAD><TITLE>401\x20Unauthorized</T
+SF:ITLE></HEAD>\n<BODY><H1>401\x20Unauthorized</H1>\n\n</BODY></HTML>\n")%
+SF:r(RTSPRequest,E0,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nDate:\x20Sun,\x
+SF:2008\x20Nov\x202026\x2019:52:48\x20GMT\r\nConnection:\x20close\r\nConte
+SF:nt-type:\x20text/html\r\n\r\n<HTML><HEAD><TITLE>400\x20Bad\x20Request</
+SF:TITLE></HEAD>\n<BODY><H1>400\x20Bad\x20Request</H1>\nUnsupported\x20met
+SF:hod\n</BODY></HTML>\n")%r(FourOhFourRequest,10C,"HTTP/1\.1\x20401\x20Un
+SF:authorized\r\nDate:\x20Sun,\x2008\x20Nov\x202026\x2019:52:53\x20GMT\r\n
+SF:Connection:\x20close\r\nContent-type:\x20text/html\r\nWWW-Authenticate:
+SF:\x20Basic\x20realm=\"Web\x20Server\x20Authentication\"\r\n\r\n<HTML><HE
+SF:AD><TITLE>401\x20Unauthorized</TITLE></HEAD>\n<BODY><H1>401\x20Unauthor
+SF:ized</H1>\n\n</BODY></HTML>\n")%r(Help,E0,"HTTP/1\.1\x20400\x20Bad\x20R
+SF:equest\r\nDate:\x20Sun,\x2008\x20Nov\x202026\x2019:53:08\x20GMT\r\nConn
+SF:ection:\x20close\r\nContent-type:\x20text/html\r\n\r\n<HTML><HEAD><TITL
+SF:E>400\x20Bad\x20Request</TITLE></HEAD>\n<BODY><H1>400\x20Bad\x20Request
+SF:</H1>\nUnsupported\x20method\n</BODY></HTML>\n")%r(SSLSessionReq,E0,"HT
+SF:TP/1\.1\x20400\x20Bad\x20Request\r\nDate:\x20Sun,\x2008\x20Nov\x202026\
+SF:x2019:53:08\x20GMT\r\nConnection:\x20close\r\nContent-type:\x20text/htm
+SF:l\r\n\r\n<HTML><HEAD><TITLE>400\x20Bad\x20Request</TITLE></HEAD>\n<BODY
+SF:><H1>400\x20Bad\x20Request</H1>\nUnsupported\x20method\n</BODY></HTML>\
+SF:n")%r(TerminalServerCookie,E0,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nDa
+SF:te:\x20Sun,\x2008\x20Nov\x202026\x2019:53:08\x20GMT\r\nConnection:\x20c
+SF:lose\r\nContent-type:\x20text/html\r\n\r\n<HTML><HEAD><TITLE>400\x20Bad
+SF:\x20Request</TITLE></HEAD>\n<BODY><H1>400\x20Bad\x20Request</H1>\nUnsup
+SF:ported\x20method\n</BODY></HTML>\n");
+MAC Address: EE:03:FE:4E:B0:48 (Unknown)
+No exact OS matches for host (If you know what OS is running on it, see https://nmap.org/submit/ ).
+TCP/IP fingerprint:
+OS:SCAN(V=7.94SVN%E=4%D=11/8%OT=23%CT=1%CU=38217%PV=Y%DS=1%DC=D%G=Y%M=EE03F
+OS:E%TM=6AF0D36D%P=x86_64-pc-linux-gnu)SEQ(SP=100%GCD=1%ISR=10B%TI=Z%CI=Z%T
+OS:S=22)SEQ(SP=100%GCD=1%ISR=10B%TI=Z%CI=Z%II=I%TS=22)OPS(O1=M5B4ST11NWA%O2
+OS:=M5B4ST11NWA%O3=M5B4NNT11NWA%O4=M5B4ST11NWA%O5=M5B4ST11NWA%O6=M5B4ST11)W
+OS:IN(W1=FE88%W2=FE88%W3=FE88%W4=FE88%W5=FE88%W6=FE88)ECN(R=Y%DF=Y%T=40%W=F
+OS:AF0%O=M5B4NNSNWA%CC=Y%Q=)T1(R=Y%DF=Y%T=40%S=O%A=S+%F=AS%RD=0%Q=)T2(R=N)T
+OS:3(R=N)T4(R=Y%DF=Y%T=40%W=0%S=A%A=Z%F=R%O=%RD=0%Q=)T5(R=Y%DF=Y%T=40%W=0%S
+OS:=Z%A=S+%F=AR%O=%RD=0%Q=)T6(R=Y%DF=Y%T=40%W=0%S=A%A=Z%F=R%O=%RD=0%Q=)T7(R
+OS:=Y%DF=Y%T=40%W=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)U1(R=Y%DF=N%T=40%IPL=164%UN=0%
+OS:RIPL=G%RID=G%RIPCK=G%RUCK=G%RUD=G)IE(R=Y%DFI=N%T=40%CD=S)
+
+Network Distance: 1 hop
+Service Info: Host: camara-ip
+
+Nmap scan report for 192.168.56.20
+Host is up (0.000011s latency).
+Not shown: 999 closed tcp ports (reset)
+PORT   STATE SERVICE VERSION
+80/tcp open  http    Apache httpd 2.4.49 ((Unix))
+MAC Address: F2:81:18:C8:0D:AD (Unknown)
+No exact OS matches for host (If you know what OS is running on it, see https://nmap.org/submit/ ).
+TCP/IP fingerprint:
+OS:SCAN(V=7.94SVN%E=4%D=11/8%OT=80%CT=1%CU=37244%PV=Y%DS=1%DC=D%G=Y%M=F2811
+OS:8%TM=6AF0D36D%P=x86_64-pc-linux-gnu)SEQ(SP=107%GCD=1%ISR=10D%TI=Z%CI=Z%T
+OS:S=21)SEQ(SP=107%GCD=1%ISR=10D%TI=Z%CI=Z%II=I%TS=21)OPS(O1=M5B4ST11NWA%O2
+OS:=M5B4ST11NWA%O3=M5B4NNT11NWA%O4=M5B4ST11NWA%O5=M5B4ST11NWA%O6=M5B4ST11)W
+OS:IN(W1=FE88%W2=FE88%W3=FE88%W4=FE88%W5=FE88%W6=FE88)ECN(R=Y%DF=Y%T=40%W=F
+OS:AF0%O=M5B4NNSNWA%CC=Y%Q=)T1(R=Y%DF=Y%T=40%S=O%A=S+%F=AS%RD=0%Q=)T2(R=N)T
+OS:3(R=N)T4(R=Y%DF=Y%T=40%W=0%S=A%A=Z%F=R%O=%RD=0%Q=)T5(R=Y%DF=Y%T=40%W=0%S
+OS:=Z%A=S+%F=AR%O=%RD=0%Q=)T6(R=Y%DF=Y%T=40%W=0%S=A%A=Z%F=R%O=%RD=0%Q=)T7(R
+OS:=Y%DF=Y%T=40%W=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)U1(R=Y%DF=N%T=40%IPL=164%UN=0%
+OS:RIPL=G%RID=G%RIPCK=G%RUCK=G%RUD=G)IE(R=Y%DFI=N%T=40%CD=S)
+
+Network Distance: 1 hop
+
+Nmap scan report for 192.168.56.30
+Host is up (0.000010s latency).
+Not shown: 999 closed tcp ports (reset)
+PORT   STATE SERVICE VERSION
+21/tcp open  ftp     vsftpd 3.0.5
+MAC Address: AA:DF:BA:5F:EA:1C (Unknown)
+No exact OS matches for host (If you know what OS is running on it, see https://nmap.org/submit/ ).
+TCP/IP fingerprint:
+OS:SCAN(V=7.94SVN%E=4%D=11/8%OT=21%CT=1%CU=33057%PV=Y%DS=1%DC=D%G=Y%M=AADFB
+OS:A%TM=6AF0D36D%P=x86_64-pc-linux-gnu)SEQ(SP=FF%GCD=1%ISR=10D%TI=Z%CI=Z%TS
+OS:=22)SEQ(SP=FF%GCD=1%ISR=10D%TI=Z%CI=Z%II=I%TS=22)OPS(O1=M5B4ST11NWA%O2=M
+OS:5B4ST11NWA%O3=M5B4NNT11NWA%O4=M5B4ST11NWA%O5=M5B4ST11NWA%O6=M5B4ST11)WIN
+OS:(W1=FE88%W2=FE88%W3=FE88%W4=FE88%W5=FE88%W6=FE88)ECN(R=Y%DF=Y%T=40%W=FAF
+OS:0%O=M5B4NNSNWA%CC=Y%Q=)T1(R=Y%DF=Y%T=40%S=O%A=S+%F=AS%RD=0%Q=)T2(R=N)T3(
+OS:R=N)T4(R=Y%DF=Y%T=40%W=0%S=A%A=Z%F=R%O=%RD=0%Q=)T5(R=Y%DF=Y%T=40%W=0%S=Z
+OS:%A=S+%F=AR%O=%RD=0%Q=)T6(R=Y%DF=Y%T=40%W=0%S=A%A=Z%F=R%O=%RD=0%Q=)T7(R=Y
+OS:%DF=Y%T=40%W=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)U1(R=Y%DF=N%T=40%IPL=164%UN=0%RI
+OS:PL=G%RID=G%RIPCK=G%RUCK=G%RUD=G)IE(R=Y%DFI=N%T=40%CD=S)
+
+Network Distance: 1 hop
+Service Info: OS: Unix
+
+Nmap scan report for infame-Aspire-A315-56 (192.168.56.1)
+Host is up (0.000061s latency).
+Not shown: 997 closed tcp ports (reset)
+PORT     STATE SERVICE  VERSION
+80/tcp   open  http     nginx
+3306/tcp open  mysql    MySQL (unauthorized)
+8000/tcp open  http-alt
+1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
+SF-Port8000-TCP:V=7.94SVN%I=7%D=11/8%Time=6AF0D378%P=x86_64-pc-linux-gnu%r
+SF:(GetRequest,168,"HTTP/1\.1\x20404\x20Not\x20Found\r\nContent-Security-P
+SF:olicy:\x20default-src\x20'none'\r\nX-Content-Type-Options:\x20nosniff\r
+SF:\nContent-Type:\x20text/html;\x20charset=utf-8\r\nContent-Length:\x2013
+SF:9\r\nDate:\x20Sun,\x2008\x20Nov\x202026\x2019:54:32\x20GMT\r\nConnectio
+SF:n:\x20close\r\n\r\n<!DOCTYPE\x20html>\n<html\x20lang=\"en\">\n<head>\n<
+SF:meta\x20charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre
+SF:>Cannot\x20GET\x20/</pre>\n</body>\n</html>\n")%r(X11Probe,1C,"HTTP/1\.
+SF:1\x20400\x20Bad\x20Request\r\n\r\n")%r(FourOhFourRequest,18B,"HTTP/1\.1
+SF:\x20404\x20Not\x20Found\r\nContent-Security-Policy:\x20default-src\x20'
+SF:none'\r\nX-Content-Type-Options:\x20nosniff\r\nContent-Type:\x20text/ht
+SF:ml;\x20charset=utf-8\r\nContent-Length:\x20174\r\nDate:\x20Sun,\x2008\x
+SF:20Nov\x202026\x2019:54:32\x20GMT\r\nConnection:\x20close\r\n\r\n<!DOCTY
+SF:PE\x20html>\n<html\x20lang=\"en\">\n<head>\n<meta\x20charset=\"utf-8\">
+SF:\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot\x20GET\x20/nice%20
+SF:ports%2C/Tri%6Eity\.txt%2ebak</pre>\n</body>\n</html>\n")%r(Socks5,1C,"
+SF:HTTP/1\.1\x20400\x20Bad\x20Request\r\n\r\n")%r(Socks4,1C,"HTTP/1\.1\x20
+SF:400\x20Bad\x20Request\r\n\r\n")%r(HTTPOptions,16C,"HTTP/1\.1\x20404\x20
+SF:Not\x20Found\r\nContent-Security-Policy:\x20default-src\x20'none'\r\nX-
+SF:Content-Type-Options:\x20nosniff\r\nContent-Type:\x20text/html;\x20char
+SF:set=utf-8\r\nContent-Length:\x20143\r\nDate:\x20Sun,\x2008\x20Nov\x2020
+SF:26\x2019:54:32\x20GMT\r\nConnection:\x20close\r\n\r\n<!DOCTYPE\x20html>
+SF:\n<html\x20lang=\"en\">\n<head>\n<meta\x20charset=\"utf-8\">\n<title>Er
+SF:ror</title>\n</head>\n<body>\n<pre>Cannot\x20OPTIONS\x20/</pre>\n</body
+SF:>\n</html>\n")%r(RTSPRequest,16C,"HTTP/1\.1\x20404\x20Not\x20Found\r\nC
+SF:ontent-Security-Policy:\x20default-src\x20'none'\r\nX-Content-Type-Opti
+SF:ons:\x20nosniff\r\nContent-Type:\x20text/html;\x20charset=utf-8\r\nCont
+SF:ent-Length:\x20143\r\nDate:\x20Sun,\x2008\x20Nov\x202026\x2019:54:32\x2
+SF:0GMT\r\nConnection:\x20close\r\n\r\n<!DOCTYPE\x20html>\n<html\x20lang=\
+SF:"en\">\n<head>\n<meta\x20charset=\"utf-8\">\n<title>Error</title>\n</he
+SF:ad>\n<body>\n<pre>Cannot\x20OPTIONS\x20/</pre>\n</body>\n</html>\n");
+No exact OS matches for host (If you know what OS is running on it, see https://nmap.org/submit/ ).
+TCP/IP fingerprint:
+OS:SCAN(V=7.94SVN%E=4%D=11/8%OT=80%CT=1%CU=34169%PV=Y%DS=0%DC=L%G=Y%TM=6AF0
+OS:D383%P=x86_64-pc-linux-gnu)SEQ(SP=108%GCD=1%ISR=10A%TI=Z%CI=Z%TS=21)SEQ(
+OS:SP=108%GCD=1%ISR=10A%TI=Z%CI=Z%II=I%TS=21)OPS(O1=MFFD7ST11NWA%O2=MFFD7ST
+OS:11NWA%O3=MFFD7NNT11NWA%O4=MFFD7ST11NWA%O5=MFFD7ST11NWA%O6=MFFD7ST11)WIN(
+OS:W1=FFCB%W2=FFCB%W3=FFCB%W4=FFCB%W5=FFCB%W6=FFCB)ECN(R=Y%DF=Y%T=40%W=FFD7
+OS:%O=MFFD7NNSNWA%CC=Y%Q=)T1(R=Y%DF=Y%T=40%S=O%A=S+%F=AS%RD=0%Q=)T2(R=N)T3(
+OS:R=N)T4(R=Y%DF=Y%T=40%W=0%S=A%A=Z%F=R%O=%RD=0%Q=)T5(R=Y%DF=Y%T=40%W=0%S=Z
+OS:%A=S+%F=AR%O=%RD=0%Q=)T6(R=Y%DF=Y%T=40%W=0%S=A%A=Z%F=R%O=%RD=0%Q=)T7(R=Y
+OS:%DF=Y%T=40%W=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)U1(R=Y%DF=N%T=40%IPL=164%UN=0%RI
+OS:PL=G%RID=G%RIPCK=G%RUCK=G%RUD=G)IE(R=Y%DFI=N%T=40%CD=S)
+
+Network Distance: 0 hops
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Sun Nov  8 14:54:43 2026 -- 256 IP addresses (4 hosts up) scanned in 122.83 seconds
