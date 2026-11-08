@@ -1,0 +1,88 @@
+INFORME DE AUDITORÍA MANUAL — Laboratorio Jagi-Sentinel (Fase IV)
+=================================================================
+Fecha: 8 de noviembre de 2026
+Auditor: __Jhoan Sebastian Velez Piñeres__
+Red auditada: 192.168.56.0/24 (laboratorio virtualizado, interfaz jagi-lab0)
+Hora de inicio: 14:51   Hora de fin: 15:19   Tiempo total: 28 min
+Herramientas: Nmap 7.94SVN, curl, navegador web (NVD), editor de texto
+
+
+1. DISPOSITIVOS ENCONTRADOS
+---------------------------
+IP              | Sistema operativo (según Nmap)            | ¿Dispositivo IoT?
+192.168.56.1    | Equipo de análisis (gateway del laboratorio) | No
+192.168.56.10   | Linux/Unix (sin coincidencia exacta); Host: camara-ip (posible cámara IP) | Sí
+192.168.56.20   | Linux/Unix (sin coincidencia exacta)      | Sí
+192.168.56.30   | Unix (sin coincidencia exacta)            | Sí
+
+Total: 4 equipos activos, de los cuales 3 son dispositivos IoT.
+Descubrimiento: nmap -sn (1.97 s). Escaneo de servicios: nmap -sS -sV -O (122.83 s).
+Las MAC aparecen como "Unknown": no es posible identificar el fabricante.
+
+
+2. SERVICIOS POR DISPOSITIVO
+----------------------------
+IP              | Puerto | Servicio | Producto                    | Versión
+192.168.56.10   | 23     | telnet   | BusyBox telnetd             | (no muestra)
+192.168.56.10   | 80     | http     | (no identificado por Nmap; responde 401 con autenticación básica) | (no muestra)
+192.168.56.20   | 80     | http     | Apache httpd                | 2.4.49
+192.168.56.30   | 21     | ftp      | vsftpd                      | 3.0.5
+
+
+3. VULNERABILIDADES (NVD)
+-------------------------
+IP              | Producto y versión  | CVE encontrados                         | CVSS máx | Verificado
+192.168.56.20   | Apache httpd 2.4.49 | CVE-2021-41773 (9.8 CRITICAL, NVD)      | 9.8      | Sí
+                |                     | CVE-2021-42013 (9.8 CRITICAL, NVD)      |          | Ambos en CISA KEV (explotados activamente)
+192.168.56.30   | vsftpd 3.0.5        | CVE-2026-119568 (9.1 CRITICAL, CVSS 4.0, CNA VulnCheck) | 9.1 (provisional) | Sí, pero NVD aún no los califica
+                |                     | CVE-2026-119567 (2.3 LOW, CVSS 4.0, CNA VulnCheck)      |          | ("Awaiting Enrichment")
+192.168.56.10   | BusyBox telnetd     | —                                       | —        | No: el servicio no muestra versión
+192.168.56.10   | HTTP (puerto 80)    | —                                       | —        | No: no muestra producto ni versión
+
+Método: búsqueda por palabra clave en https://nvd.nist.gov/vuln/search
+(2 búsquedas) y revisión del detalle de cada CVE (4 páginas): 6 consultas en total.
+
+
+4. CREDENCIALES POR DEFECTO
+---------------------------
+IP:Puerto          | ¿Pide autenticación?            | Credencial que funcionó
+192.168.56.10:80   | Sí (401, autenticación básica)  | admin/admin → 200 OK (acepta credencial de fábrica)
+192.168.56.20:80   | No                              | (no aplica)
+
+
+5. PRIORIZACIÓN (de mayor a menor gravedad)
+-------------------------------------------
+#  | Hallazgo                                        | Nivel   | Justificación
+1  | 192.168.56.20:80 Apache 2.4.49                  | Crítico | CVE-2021-41773 y CVE-2021-42013, CVSS 9.8: path traversal y
+   |                                                 |         | posible ejecución remota de código, sin autenticación y
+   |                                                 |         | explotados activamente (CISA KEV)
+2  | 192.168.56.10:80 Panel web acepta admin/admin   | Alto    | Credencial de fábrica: acceso directo a la administración
+   |                                                 |         | del dispositivo
+3  | 192.168.56.30:21 vsftpd 3.0.5 (FTP)             | Alto    | Protocolo sin cifrar (usuarios, contraseñas y archivos
+   |                                                 |         | legibles); CVE-2026-119568 con CVSS 9.1 provisional,
+   |                                                 |         | explotable solo si FTPS está activo y bajo condiciones difíciles
+4  | 192.168.56.10:23 Telnet (BusyBox telnetd)       | Alto    | Acceso remoto de administración sin cifrar; la versión
+   |                                                 |         | no se puede verificar contra NVD
+5  | 192.168.56.10:80 Panel por HTTP sin cifrar      | Medio   | La contraseña viaja solo codificada en Base64,
+   |                                                 |         | legible para cualquiera en la red
+
+
+6. OBSERVACIONES
+----------------
+- El FTP de 192.168.56.30 acepta acceso anónimo: con curl ftp://192.168.56.30/
+  mostró la carpeta "pub" sin pedir usuario ni contraseña.
+- La IP 192.168.56.1 es el computador del auditor (gateway del laboratorio).
+  Tiene abiertos nginx (80), MySQL (3306) y un servicio web en el 8000, que
+  pertenecen a otros proyectos instalados en ese equipo y escuchan en todas sus
+  interfaces, incluida la red del laboratorio. No es un dispositivo IoT, por
+  eso no se cuenta en la auditoría. Recomendación: limitar esos servicios a
+  localhost.
+- Los dos CVE de vsftpd 3.0.5 se publicaron el 30 de octubre de 2026. NVD
+  todavía no les ha puesto su propia nota ("Awaiting Enrichment"); por eso
+  se usó la nota de VulnCheck, como provisional.
+- El servicio Telnet y el panel web de 192.168.56.10 no muestran su versión,
+  así que no se pudieron buscar en NVD.
+- Incidente: el comando gedit falló porque ese editor no está instalado en
+  este Ubuntu; el informe se escribió con el "Editor de texto" del sistema.
+- La auditoría se hizo con apoyo de un asistente para el procedimiento y la
+  interpretación de los resultados.
